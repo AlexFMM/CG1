@@ -16,7 +16,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <Windows.h>
-#include <GL/glut.h>
+#include <glut.h>
+#include <glu.h>
 //
 //	Definições /////////////////////////////////////////////////////////////////
 //
