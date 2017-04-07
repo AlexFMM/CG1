@@ -40,9 +40,23 @@ int hover=0;
 int active=1;
 int button[3][2] = { {75,110}, {125,160}, {175,210} };
 
+FILE *dados;
+
 //
 //	Funções ////////////////////////////////////////////////////////////////////
 //
+
+//	Leitura do ficheiro de dados ///////////////////////////////////////////////
+void leituraFicheiro() {
+	if ((dados = fopen("dados.txt", "r")) == NULL) {
+		printf("Erro: ficheiro inexistente na diretoria!\nPrima <ENTER> para sair.");
+		getchar();
+		exit(0);
+	}
+}
+
+//	Funções de desenho /////////////////////////////////////////////////////////
+
 void drawMenu();
 
 void init(void) {
@@ -210,6 +224,9 @@ void display(void){
 ////////////////////////////////////////////////////////////////////////////////
 
 int main(int argc, char** argv){
+	//Lê ficheiros -  se não existir na diretoria o programa não arranca de todo.
+	leituraFicheiro();
+
 	// Inicializa o GLUT
 	glutInit(&argc, argv);
 
