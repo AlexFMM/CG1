@@ -16,6 +16,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <Windows.h>
+#include <time.h>
 #include <glut.h>
 #include <glu.h>
 //
@@ -41,18 +42,35 @@ int active=1;
 int button[3][2] = { {75,110}, {125,160}, {175,210} };
 
 FILE *dados;
-
+FILE *logFile;
 //
 //	Funções ////////////////////////////////////////////////////////////////////
 //
 
-//	Leitura do ficheiro de dados ///////////////////////////////////////////////
-void leituraFicheiro() {
-	if ((dados = fopen("dados.txt", "r")) == NULL) {
+//	Leitura e processamento do ficheiro de dados ////////////////////////////////
+void leituraFicheiro(char *file) {
+	if ((dados = fopen(file, "r")) == NULL) {
 		printf("Erro: ficheiro inexistente na diretoria!\nPrima <ENTER> para sair.");
 		getchar();
 		exit(0);
 	}
+	else {
+		time_t t = time(NULL);
+		struct tm *tm = localtime(&t);
+
+		printf("Leitura efetuada com sucesso! \nData: %s", asctime(tm));
+
+		if ((logFile = fopen("logs.txt", "a")) == NULL) {
+			logFile = fopen("logs.txt", "wb+");
+		}
+		fprintf(logFile, "Leitura efetuada em: %s", asctime(tm));
+
+		fclose(logFile);
+	}
+}
+
+void processaFicheiro() {
+	
 }
 
 //	Funções de desenho /////////////////////////////////////////////////////////
@@ -225,7 +243,7 @@ void display(void){
 
 int main(int argc, char** argv){
 	//Lê ficheiros -  se não existir na diretoria o programa não arranca de todo.
-	leituraFicheiro();
+	leituraFicheiro("dados.txt");
 
 	// Inicializa o GLUT
 	glutInit(&argc, argv);
@@ -237,7 +255,7 @@ int main(int argc, char** argv){
 	glutInitWindowPosition(100, 100);
 
 	// Cria a janela GLUT de visualização
-	glutCreateWindow("Gestão de escola");
+	glutCreateWindow("GestEscola");
 
 	init();
 
