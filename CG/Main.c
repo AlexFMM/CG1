@@ -68,6 +68,12 @@ float totOrdenados = 0.0; //euros -> à partida valor fixo
 //tratamento de dados
 float tabelaDados[12][5]; //12 linhas => meses por 7 colunas => valores de sobra a escola + valores de gastos
 
+float aguaMes[12];
+float gasMes[12];
+float cheiasMes[12];
+float pontaMes[12];
+float vaziasMes[12];
+
 //vetores com valores presentes nos dados
 
 //contadores para funções
@@ -98,33 +104,35 @@ void leituraFicheiro(char *file) {
 		fclose(logFile);
 	}
 
-	//obtenção do total de gastos
+	//obtenção do total de gastos e vetores com os dados (para gráficos)
 	for (i = 0; i < 12; i++) {
 		for (j = 0; j < 5; j++) {
 			fscanf(dados, "%f", &tabelaDados[i][j]);
 
 			if (j == 0) {
 				totAgua = totAgua + tabelaDados[i][0];
+				aguaMes[i] = tabelaDados[i][0];
 			}
 			if (j == 1) {
 				totGas = totGas + tabelaDados[i][1];
+				gasMes[i] = tabelaDados[i][1];
 			}
 			if (j == 2) {
 				totCheias = totCheias + tabelaDados[i][2];
+				cheiasMes[i] = tabelaDados[i][2];
 			}
 			if (j == 3) {
 				totPonta = totPonta + tabelaDados[i][3];
+				pontaMes[i] = tabelaDados[i][3];
 			}
 			if (j == 4) {
 				totVazias = totVazias + tabelaDados[i][3];
+				vaziasMes[i] = tabelaDados[i][4];
 			}
 		}
 	}
 	totalElec = totCheias + totPonta + totVazias;
-
-	//obtenção dos vetores de dados
-
-
+	
 	fclose(dados);
 }
 
@@ -132,82 +140,120 @@ void leituraFicheiro(char *file) {
 
 void editaValores() {
 	int opcao;
-
-	printf("\nQue valores deseja editar: \nOrcamento (1); \nNumero de horas de funcionamento (2); ");
+	system("cls");
+	printf("Que valores deseja editar: \nOrcamento (1); \nNumero de horas de funcionamento (2); ");
 	printf("\nCusto da Agua/m3 (3); \nCusto do Gas/m3 (4)");
-	printf("\nCusto de horario cheias/KwH (5); \nCusto de horario ponta/KwH (6); Custo de horario vazio/KwH (7);");
-	printf("\nSair (8)\n");
+	printf("\nCusto de horario cheias/KwH (5); \nCusto de horario ponta/KwH (6); \nCusto de horario vazio/KwH (7);");
+	printf("\nNumero de alunos (8); \nNumero de membros do staff (9); \nTotal anual de vencimentos (10); \nSair (11)\n");
 	scanf("%d", &opcao);
-	while (opcao < 1 || opcao > 8) {
+	while (opcao < 1 || opcao > 11) {
 		printf("\nValor invalido! Tente de novo:");
 		scanf("%d", &opcao);
 	}
 
 	switch (opcao) {
-	case 1: //Valor de orçamento mensal
-		printf("Valor atual = %f \nNovo: ", orcamentoMensal);
+	case 1:
+		system("cls");
+		printf("\nValor atual = %f \nNovo: ", orcamentoMensal);
 		scanf("%f", orcamentoMensal);
 		while (orcamentoMensal < 0.0) {
 			printf("\nValor invalido! Tente de novo:");
 			scanf("%f", orcamentoMensal);
 		}
-		printf("Valor atualizado com sucesso!");
+		printf("\nValor atualizado com sucesso!");
 		break;
 	case 2:
-		printf("Valor atual = %f \nNovo: ", horasFuncionamento);
+		system("cls");
+		printf("\nValor atual = %f \nNovo: ", horasFuncionamento);
 		scanf("%f", horasFuncionamento);
 		while (horasFuncionamento < 0.0) {
 			printf("\nValor invalido! Tente de novo:");
 			scanf("%f", horasFuncionamento);
 		}
-		printf("Valor atualizado com sucesso!");
+		printf("\nValor atualizado com sucesso!");
 		break;
 	case 3:
-		printf("Valor atual = %f \nNovo: ", custoAgua);
+		system("cls");
+		printf("\nValor atual = %f \nNovo: ", custoAgua);
 		scanf("%f", custoAgua);
 		while (custoAgua < 0.0) {
 			printf("\nValor invalido! Tente de novo:");
 			scanf("%f", custoAgua);
 		}
-		printf("Valor atualizado com sucesso!");
+		printf("\nValor atualizado com sucesso!");
 		break;
 	case 4:
-		printf("Valor atual = %f \nNovo: ", custoGas);
+		system("cls");
+		printf("\nValor atual = %f \nNovo: ", custoGas);
 		scanf("%f", custoGas);
 		while (custoGas < 0.0) {
 			printf("\nValor invalido! Tente de novo:");
 			scanf("%f", custoGas);
 		}
-		printf("Valor atualizado com sucesso!");
+		printf("\nValor atualizado com sucesso!");
 		break;
 	case 5:
-		printf("Valor atual = %f \nNovo: ", custoEleticidadeCheio);
+		system("cls");
+		printf("\nValor atual = %f \nNovo: ", custoEleticidadeCheio);
 		scanf("%f", custoEleticidadeCheio);
 		while (custoEleticidadeCheio < 0.0) {
 			printf("\nValor invalido! Tente de novo:");
 			scanf("%f", custoEleticidadeCheio);
 		}
-		printf("Valor atualizado com sucesso!");
+		printf("\nValor atualizado com sucesso!");
 		break;
 	case 6:
-		printf("Valor atual = %f \nNovo: ", custoEleticidadePonta);
+		system("cls");
+		printf("\nValor atual = %f \nNovo: ", custoEleticidadePonta);
 		scanf("%f", custoEleticidadePonta);
 		while (custoEleticidadePonta < 0.0) {
 			printf("\nValor invalido! Tente de novo:");
 			scanf("%f", custoEleticidadePonta);
 		}
-		printf("Valor atualizado com sucesso!");
+		printf("\nValor atualizado com sucesso!");
 		break;
 	case 7:
-		printf("Valor atual = %f \nNovo: ", custoEleticidadeVazio);
+		system("cls");
+		printf("\nValor atual = %f \nNovo: ", custoEleticidadeVazio);
 		scanf("%f", custoEleticidadeVazio);
 		while (custoEleticidadeVazio < 0.0) {
 			printf("\nValor invalido! Tente de novo:");
 			scanf("%f", custoEleticidadeVazio);
 		}
-		printf("Valor atualizado com sucesso!");
+		printf("\nValor atualizado com sucesso!");
 		break;
 	case 8:
+		system("cls");
+		printf("\nValor atual = %f \nNovo: ", numAlunos);
+		scanf("%f", numAlunos);
+		while (numAlunos < 0.0) {
+			printf("\nValor invalido! Tente de novo:");
+			scanf("%f", numAlunos);
+		}
+		printf("\nValor atualizado com sucesso!");
+		break;
+	case 9:
+		system("cls");
+		printf("\nValor atual = %f \nNovo: ", numStaff);
+		scanf("%f", numStaff);
+		while (numStaff < 0.0) {
+			printf("\nValor invalido! Tente de novo:");
+			scanf("%f", numStaff);
+		}
+		printf("\nValor atualizado com sucesso!");
+		break;
+	case 10:
+		system("cls");
+		printf("\nValor atual = %f \nNovo: ", totOrdenados);
+		scanf("%f", totOrdenados);
+		while (totOrdenados < 0.0) {
+			printf("\nValor invalido! Tente de novo:");
+			scanf("%f", totOrdenados);
+		}
+		printf("\nValor atualizado com sucesso!");
+		break;
+	case 11:
+		system("cls");
 		break;
 	}
 }
