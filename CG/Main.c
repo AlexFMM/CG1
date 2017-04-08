@@ -45,21 +45,17 @@ FILE *dados;
 FILE *logFile;
 
 //dados presentes no ficheiro de dados (por coluna -> cada linha representa um mês)
-//sobre a escola
-int numAlunos; //alunos a frequentar ativamente a escola
-int numStaff; //professores, funcionários e seguranças a exercer funções
-
-//sobre os gastos
-float agua; //metros cubicos
-float gas; //metros cubicos
-struct {
-	float cheias; //kwH
-	float ponta; //kwH
-	float vazias; //kwH
-	float total; //kwH -> soma das três anteriores
-} eletricidade;
+//sobre os gastos, no total
+float totAgua = 0.0; //metros cubicos
+float totGas = 0.0; //metros cubicos
+float totCheias = 0.0; //kwH
+float totPonta = 0.0; //kwH
+float totVazias = 0.0; //kwH
+float totalElec = 0.0 ; //kwH -> soma das três anteriores
 
 //definidos pelo utilizador - para efeitos de cálculo
+int numAlunos = 0.0; //alunos a frequentar ativamente a escola
+int numStaff = 0.0; //professores, funcionários e seguranças a exercer funções
 float orcamentoMensal = 0.0; //euros
 float horasFuncionamento = 0.0; //período horário
 float custoAgua = 0.0; //preço/metro cubico
@@ -67,6 +63,15 @@ float custoGas = 0.0; //preço/metro cubico
 float custoEleticidadeCheio = 0.0; //preço/kwH
 float custoEleticidadePonta = 0.0; //preço/kwH
 float custoEleticidadeVazio = 0.0; //preço/kwH
+float totOrdenados = 0.0; //euros -> à partida valor fixo
+
+//tratamento de dados
+float tabelaDados[12][5]; //12 linhas => meses por 7 colunas => valores de sobra a escola + valores de gastos
+
+//vetores com valores presentes nos dados
+
+//contadores para funções
+int i, j;
 
 //
 //	Funções ////////////////////////////////////////////////////////////////////
@@ -74,7 +79,7 @@ float custoEleticidadeVazio = 0.0; //preço/kwH
 
 //	Leitura e processamento do ficheiro de dados ////////////////////////////////
 void leituraFicheiro(char *file) {
-	if ((dados = fopen(file, "r")) == NULL) {
+	if ((dados = fopen(file, "r+")) == NULL) {
 		printf("Erro: ficheiro inexistente na diretoria!\nPrima <ENTER> para sair.");
 		getchar();
 		exit(0);
@@ -93,8 +98,37 @@ void leituraFicheiro(char *file) {
 		fclose(logFile);
 	}
 
+	//obtenção do total de gastos
+	for (i = 0; i < 12; i++) {
+		for (j = 0; j < 5; j++) {
+			fscanf(dados, "%f", &tabelaDados[i][j]);
+
+			if (j == 0) {
+				totAgua = totAgua + tabelaDados[i][0];
+			}
+			if (j == 1) {
+				totGas = totGas + tabelaDados[i][1];
+			}
+			if (j == 2) {
+				totCheias = totCheias + tabelaDados[i][2];
+			}
+			if (j == 3) {
+				totPonta = totPonta + tabelaDados[i][3];
+			}
+			if (j == 4) {
+				totVazias = totVazias + tabelaDados[i][3];
+			}
+		}
+	}
+	totalElec = totCheias + totPonta + totVazias;
+
+	//obtenção dos vetores de dados
+
+
 	fclose(dados);
 }
+
+
 
 void editaValores() {
 	int opcao;
