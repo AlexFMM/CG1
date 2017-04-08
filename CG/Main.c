@@ -3,12 +3,11 @@
 /**    COMPUTACAO GRAFICA                              |        .-.    |     **/
 /**    MIEEC - FCTUC                                   |        !o|    |     **/
 /**                                                    |>-,   ,-' | ,-<|     **/
-/**    AUTORES: - ...................                  |  `---'   `-'  |     **/
-/**             - ...................                  `---------------'     **/
+/**    AUTORES: - André Filipe Gonçalves Fonseca       |  `---'   `-'  |     **/
+/**             - Alexandre Filipe Marcela Martins     `---------------'     **/
 /******************************************************************************/
-/* DESCRICAO: Texto que devera descrever os objectivos e os resultados .....  */
-/*            do programa. .................................................  */
-/*		      ..............................................................  */
+/* DESCRICAO: Projeto nº1 - Dashboard de Gestão Escolar                       */
+/*            Funcionamento a 100%                                            */
 /******************************************************************************/
 // 
 //	Bibliotecas a incluir //////////////////////////////////////////////////////
@@ -85,7 +84,7 @@ int i, j;
 //	Funções ////////////////////////////////////////////////////////////////////
 //
 
-//	Leitura e processamento do ficheiro de dados ////////////////////////////////
+//	Leitura e processamento do ficheiro de dados ///////////////////////////////
 void leituraFicheiro(char *file) {
 	if ((dados = fopen(file, "r+")) == NULL) {
 		printf("Erro: ficheiro inexistente na diretoria!\nPrima <ENTER> para sair.");
@@ -138,10 +137,16 @@ void leituraFicheiro(char *file) {
 	fclose(dados);
 }
 
-void editaValores() {
+//	Edição de dados, quer nos vetores criados como ficheiros ///////////////////
+
+//Toda esta edição é realizada em terminal (a dash é apenas para apresentar
+//valores consomados e finais
+void editaValores() { //edição de valores gerais, definidos pelo utilizador
 	int opcao;
 	char repetir;
 	
+	//os valores serão armazendados num ficheiro para o propósito, caso não exista
+	//é inicializado com valores todos a 0!
 	if ((dadosGerais = fopen("info_geral.txt", "r+")) == NULL) {
 		dadosGerais = fopen("info_geral.txt", "w+");
 		for (i = 0; i < 10; i++) {
@@ -355,6 +360,7 @@ void editaValores() {
 		break;
 	}
 
+	//atualização do ficheiro
 	dadosGerais = fopen("info_geral.txt", "w+");
 	for (i = 0; i < 10; i++) {
 		fprintf(dadosGerais, "%f", tabelaGerais[i]);
@@ -364,6 +370,10 @@ void editaValores() {
 	fclose(dadosGerais);
 }
 
+//funciona de modo análogo com a anterior função, com a diferença que,
+//como sabemos que o ficheiro dados.txt existe, caso contrário o programa não 
+//iniciava, não temos de controlar a situação de não existência de ficheiro
+//e posterior inicialização
 void editaDados() {
 	FILE *entrada, *saida;
 	int m, atualizador;
@@ -414,6 +424,8 @@ void editaDados() {
 		else if (repetir == 'n' || repetir == 'N') {
 			break;
 		}
+
+		aguaMes[m - 1] = novoAguaMes;
 	case 2:
 		printf("Valor atual = %f \nNovo: ", tabelaDados[m - 1][1]);
 		scanf("%f", &novoGasMes);
@@ -423,7 +435,7 @@ void editaDados() {
 			scanf("%f", &novoGasMes);
 		}
 
-		tabelaDados[m - 1][1] = novoAguaMes;
+		tabelaDados[m - 1][1] = novoGasMes;
 		printf("Valor atualizado com sucesso! Deseja repetir? (s/n)");
 		scanf(" %c", &repetir);
 
@@ -433,6 +445,8 @@ void editaDados() {
 		else if (repetir == 'n' || repetir == 'N') {
 			break;
 		}
+
+		gasMes[m - 1] = novoGasMes;
 	case 3:
 		printf("Valor atual = %f \nNovo: ", tabelaDados[m - 1][2]);
 		scanf("%f", &novoCheiaMes);
@@ -452,6 +466,8 @@ void editaDados() {
 		else if (repetir == 'n' || repetir == 'N') {
 			break;
 		}
+
+		cheiasMes[m - 1] = novoCheiaMes;
 	case 4:
 		printf("Valor atual = %f \nNovo: ", tabelaDados[m - 1][3]);
 		scanf("%f", &novoPontaMes);
@@ -471,6 +487,8 @@ void editaDados() {
 		else if (repetir == 'n' || repetir == 'N') {
 			break;
 		}
+
+		pontaMes[m - 1] = novoPontaMes;
 	case 5:
 		printf("Valor atual = %f \nNovo: ", tabelaDados[m - 1][4]);
 		scanf("%f", &novoVazioMes);
@@ -490,10 +508,13 @@ void editaDados() {
 		else if (repetir == 'n' || repetir == 'N') {
 			break;
 		}
+
+		vaziasMes[m - 1] = novoVazioMes;
 	case 6:
 		break;
 	}
 
+	//atualização do ficheiro
 	saida = fopen("dados.txt", "w");
 	for (i = 0; i < 12; i++) {
 		for (j = 0; j < 5; j++) {
@@ -506,6 +527,8 @@ void editaDados() {
 	fclose(saida);
 }
 
+//chamadas da função consoante a escolha do utilizador do menu
+//que surge com o pressionar da tecla direita do rato
 void menuEdicao(int value) {
 	if (value == 1) {
 		editaValores();
@@ -708,7 +731,7 @@ int main(int argc, char** argv){
 	glutPassiveMotionFunc(MouseMotion);
 	glutTimerFunc(0, menuAnim, 0);
 
-	//submenus para edição
+	//menu com tecla direita do rato para efetuar edições de dados 
 	int menu_id = glutCreateMenu(menuEdicao);
 	glutAddMenuEntry("Editar Valores Gerais (terminal)", 1);
 	glutAddMenuEntry("Editar Valores do Ficheiro de Dados (terminal)", 2);
