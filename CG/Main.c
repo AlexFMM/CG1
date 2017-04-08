@@ -15,7 +15,7 @@
 //
 #include <stdio.h>
 #include <stdlib.h>
-#include <Windows.h>
+#include <windows.h>
 #include <time.h>
 #include <glut.h>
 #include <glu.h>
@@ -43,6 +43,31 @@ int button[3][2] = { {75,110}, {125,160}, {175,210} };
 
 FILE *dados;
 FILE *logFile;
+
+//dados presentes no ficheiro de dados (por coluna -> cada linha representa um mês)
+//sobre a escola
+int numAlunos; //alunos a frequentar ativamente a escola
+int numStaff; //professores, funcionários e seguranças a exercer funções
+
+//sobre os gastos
+float agua; //metros cubicos
+float gas; //metros cubicos
+struct {
+	float cheias; //kwH
+	float ponta; //kwH
+	float vazias; //kwH
+	float total; //kwH -> soma das três anteriores
+} eletricidade;
+
+//definidos pelo utilizador - para efeitos de cálculo
+float orcamentoMensal = 0.0; //euros
+float horasFuncionamento = 0.0; //período horário
+float custoAgua = 0.0; //preço/metro cubico
+float custoGas = 0.0; //preço/metro cubico
+float custoEleticidadeCheio = 0.0; //preço/kwH
+float custoEleticidadePonta = 0.0; //preço/kwH
+float custoEleticidadeVazio = 0.0; //preço/kwH
+
 //
 //	Funções ////////////////////////////////////////////////////////////////////
 //
@@ -67,10 +92,104 @@ void leituraFicheiro(char *file) {
 
 		fclose(logFile);
 	}
+
+	fclose(dados);
 }
 
-void processaFicheiro() {
+void editaValores() {
+	int opcao;
+
+	printf("\nQue valores deseja editar: \nOrcamento (1); \nNumero de horas de funcionamento (2); ");
+	printf("\nCusto da Agua/m3 (3); \nCusto do Gas/m3 (4)");
+	printf("\nCusto de horario cheias/KwH (5); \nCusto de horario ponta/KwH (6); Custo de horario vazio/KwH (7);");
+	printf("\nSair (8)\n");
+	scanf("%d", &opcao);
+	while (opcao < 1 || opcao > 8) {
+		printf("\nValor invalido! Tente de novo:");
+		scanf("%d", &opcao);
+	}
+
+	switch (opcao) {
+	case 1: //Valor de orçamento mensal
+		printf("Valor atual = %f \nNovo: ", orcamentoMensal);
+		scanf("%f", orcamentoMensal);
+		while (orcamentoMensal < 0.0) {
+			printf("\nValor invalido! Tente de novo:");
+			scanf("%f", orcamentoMensal);
+		}
+		printf("Valor atualizado com sucesso!");
+		break;
+	case 2:
+		printf("Valor atual = %f \nNovo: ", horasFuncionamento);
+		scanf("%f", horasFuncionamento);
+		while (horasFuncionamento < 0.0) {
+			printf("\nValor invalido! Tente de novo:");
+			scanf("%f", horasFuncionamento);
+		}
+		printf("Valor atualizado com sucesso!");
+		break;
+	case 3:
+		printf("Valor atual = %f \nNovo: ", custoAgua);
+		scanf("%f", custoAgua);
+		while (custoAgua < 0.0) {
+			printf("\nValor invalido! Tente de novo:");
+			scanf("%f", custoAgua);
+		}
+		printf("Valor atualizado com sucesso!");
+		break;
+	case 4:
+		printf("Valor atual = %f \nNovo: ", custoGas);
+		scanf("%f", custoGas);
+		while (custoGas < 0.0) {
+			printf("\nValor invalido! Tente de novo:");
+			scanf("%f", custoGas);
+		}
+		printf("Valor atualizado com sucesso!");
+		break;
+	case 5:
+		printf("Valor atual = %f \nNovo: ", custoEleticidadeCheio);
+		scanf("%f", custoEleticidadeCheio);
+		while (custoEleticidadeCheio < 0.0) {
+			printf("\nValor invalido! Tente de novo:");
+			scanf("%f", custoEleticidadeCheio);
+		}
+		printf("Valor atualizado com sucesso!");
+		break;
+	case 6:
+		printf("Valor atual = %f \nNovo: ", custoEleticidadePonta);
+		scanf("%f", custoEleticidadePonta);
+		while (custoEleticidadePonta < 0.0) {
+			printf("\nValor invalido! Tente de novo:");
+			scanf("%f", custoEleticidadePonta);
+		}
+		printf("Valor atualizado com sucesso!");
+		break;
+	case 7:
+		printf("Valor atual = %f \nNovo: ", custoEleticidadeVazio);
+		scanf("%f", custoEleticidadeVazio);
+		while (custoEleticidadeVazio < 0.0) {
+			printf("\nValor invalido! Tente de novo:");
+			scanf("%f", custoEleticidadeVazio);
+		}
+		printf("Valor atualizado com sucesso!");
+		break;
+	case 8:
+		break;
+	}
+}
+
+void editaDados() {
 	
+
+}
+
+void menuEdicao(int value) {
+	if (value == 1) {
+		editaValores();
+	}
+	if (value == 2) {
+		editaDados();
+	}
 }
 
 //	Funções de desenho /////////////////////////////////////////////////////////
@@ -109,7 +228,7 @@ void menuAnim() {
 
 void keyboardControl(char key, int x, int y) {
 	if (key == 'Q' || key == 'q' || key == 27)
-		exit(0);
+		exit(0);	
 }
 
 void MouseButton(int button, int state, int x, int y) {
@@ -265,6 +384,12 @@ int main(int argc, char** argv){
 	glutMouseFunc(MouseButton);
 	glutPassiveMotionFunc(MouseMotion);
 	glutTimerFunc(0, menuAnim, 0);
+
+	//submenus para edição
+	int menu_id = glutCreateMenu(menuEdicao);
+	glutAddMenuEntry("Editar Valores Gerais (terminal)", 1);
+	glutAddMenuEntry("Editar Valores do Ficheiro de Dados (terminal)", 2);
+	glutAttachMenu(GLUT_RIGHT_BUTTON);
 
 	// Esperando por eventos
 	glutMainLoop();
