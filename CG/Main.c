@@ -43,6 +43,7 @@ int button[3][2] = { {75,110}, {125,160}, {175,210} };
 
 FILE *dados;
 FILE *logFile;
+FILE *dadosGerais;
 
 //dados presentes no ficheiro de dados (por coluna -> cada linha representa um mês)
 //sobre os gastos, no total
@@ -54,8 +55,8 @@ float totVazias = 0.0; //kwH
 float totalElec = 0.0 ; //kwH -> soma das três anteriores
 
 //definidos pelo utilizador - para efeitos de cálculo
-int numAlunos = 0; //alunos a frequentar ativamente a escola
-int numStaff = 0; //professores, funcionários e seguranças a exercer funções
+float numAlunos = 0.0; //alunos a frequentar ativamente a escola
+float numStaff = 0.0; //professores, funcionários e seguranças a exercer funções
 float orcamentoMensal = 0.0; //euros
 float horasFuncionamento = 0.0; //período horário
 float custoAgua = 0.0; //preço/metro cubico
@@ -65,8 +66,9 @@ float custoEleticidadePonta = 0.0; //preço/kwH
 float custoEleticidadeVazio = 0.0; //preço/kwH
 float totOrdenados = 0.0; //euros -> à partida valor fixo
 
-//tratamento de dados
+//tratamento/edição de dados
 float tabelaDados[12][5]; //12 linhas => meses por 7 colunas => valores de sobra a escola + valores de gastos
+float tabelaGerais[10];
 
 float aguaMes[12];
 float gasMes[12];
@@ -138,6 +140,25 @@ void leituraFicheiro(char *file) {
 
 void editaValores() {
 	int opcao;
+	char repetir;
+	
+	if ((dadosGerais = fopen("info_geral.txt", "r+")) == NULL) {
+		dadosGerais = fopen("info_geral.txt", "w+");
+		for (i = 0; i < 10; i++) {
+			tabelaGerais[i] = 0.0;
+
+			fprintf(dadosGerais, "%.2f", tabelaGerais[i]);
+			fprintf(dadosGerais, "%s", " ");
+		}
+		fclose(dadosGerais);
+	}
+	else {
+		for (i = 0; i < 10; i++) {
+			fscanf(dadosGerais, "%.2f", tabelaGerais[i]);
+		}
+		fclose(dadosGerais);
+	}
+	
 	system("cls");
 	printf("Que valores deseja editar: \nOrcamento (1); \nNumero de horas de funcionamento (2); ");
 	printf("\nCusto da Agua/m3 (3); \nCusto do Gas/m3 (4)");
@@ -151,109 +172,196 @@ void editaValores() {
 
 	switch (opcao) {
 	case 1:
-		system("cls");
 		printf("\nValor atual = %f \nNovo: ", orcamentoMensal);
 		scanf("%f", &orcamentoMensal);
 		while (orcamentoMensal < 0.0) {
 			printf("\nValor invalido! Tente de novo:");
 			scanf("%f", &orcamentoMensal);
 		}
-		printf("\nValor atualizado com sucesso!");
-		break;
+		tabelaGerais[opcao - 1] = orcamentoMensal;
+
+		printf("Valor atualizado com sucesso! Deseja repetir? (s/n)");
+		scanf(" %c", &repetir);
+
+		if (repetir == 's' || repetir == 'S') {
+			editaValores();
+		}
+		else if (repetir == 'n' || repetir == 'N') {
+			break;
+		}
 	case 2:
-		system("cls");
 		printf("\nValor atual = %f \nNovo: ", horasFuncionamento);
 		scanf("%f", &horasFuncionamento);
 		while (horasFuncionamento < 0.0) {
 			printf("\nValor invalido! Tente de novo:");
 			scanf("%f", &horasFuncionamento);
 		}
-		printf("\nValor atualizado com sucesso!");
-		break;
+		tabelaGerais[opcao - 1] = horasFuncionamento;
+		
+		printf("Valor atualizado com sucesso! Deseja repetir? (s/n)");
+		scanf(" %c", &repetir);
+
+		if (repetir == 's' || repetir == 'S') {
+			editaValores();
+		}
+		else if (repetir == 'n' || repetir == 'N') {
+			break;
+		}
 	case 3:
-		system("cls");
 		printf("\nValor atual = %f \nNovo: ", custoAgua);
 		scanf("%f", &custoAgua);
 		while (custoAgua < 0.0) {
 			printf("\nValor invalido! Tente de novo:");
 			scanf("%f", &custoAgua);
 		}
-		printf("\nValor atualizado com sucesso!");
-		break;
+		tabelaGerais[opcao - 1] = custoAgua;
+		
+		printf("Valor atualizado com sucesso! Deseja repetir? (s/n)");
+		scanf(" %c", &repetir);
+
+		if (repetir == 's' || repetir == 'S') {
+			editaValores();
+		}
+		else if (repetir == 'n' || repetir == 'N') {
+			break;
+		}
 	case 4:
-		system("cls");
 		printf("\nValor atual = %f \nNovo: ", custoGas);
 		scanf("%f", &custoGas);
 		while (custoGas < 0.0) {
 			printf("\nValor invalido! Tente de novo:");
 			scanf("%f", &custoGas);
 		}
-		printf("\nValor atualizado com sucesso!");
-		break;
+		tabelaGerais[opcao - 1] = custoGas;
+		
+		printf("Valor atualizado com sucesso! Deseja repetir? (s/n)");
+		scanf(" %c", &repetir);
+
+		if (repetir == 's' || repetir == 'S') {
+			editaValores();
+		}
+		else if (repetir == 'n' || repetir == 'N') {
+			break;
+		}
 	case 5:
-		system("cls");
 		printf("\nValor atual = %f \nNovo: ", custoEleticidadeCheio);
 		scanf("%f", &custoEleticidadeCheio);
 		while (custoEleticidadeCheio < 0.0) {
 			printf("\nValor invalido! Tente de novo:");
 			scanf("%f", &custoEleticidadeCheio);
 		}
-		printf("\nValor atualizado com sucesso!");
-		break;
+		tabelaGerais[opcao - 1] = custoEleticidadeCheio;
+		
+		printf("Valor atualizado com sucesso! Deseja repetir? (s/n)");
+		scanf(" %c", &repetir);
+
+		if (repetir == 's' || repetir == 'S') {
+			editaValores();
+		}
+		else if (repetir == 'n' || repetir == 'N') {
+			break;
+		}
 	case 6:
-		system("cls");
 		printf("\nValor atual = %f \nNovo: ", custoEleticidadePonta);
 		scanf("%f", &custoEleticidadePonta);
 		while (custoEleticidadePonta < 0.0) {
 			printf("\nValor invalido! Tente de novo:");
 			scanf("%f", &custoEleticidadePonta);
 		}
-		printf("\nValor atualizado com sucesso!");
-		break;
+		tabelaGerais[opcao - 1] = custoEleticidadePonta;
+		
+		printf("Valor atualizado com sucesso! Deseja repetir? (s/n)");
+		scanf(" %c", &repetir);
+
+		if (repetir == 's' || repetir == 'S') {
+			editaValores();
+		}
+		else if (repetir == 'n' || repetir == 'N') {
+			break;
+		}
 	case 7:
-		system("cls");
 		printf("\nValor atual = %f \nNovo: ", custoEleticidadeVazio);
 		scanf("%f", &custoEleticidadeVazio);
 		while (custoEleticidadeVazio < 0.0) {
 			printf("\nValor invalido! Tente de novo:");
 			scanf("%f", &custoEleticidadeVazio);
 		}
-		printf("\nValor atualizado com sucesso!");
-		break;
+		tabelaGerais[opcao - 1] = custoEleticidadeVazio;
+		
+		printf("Valor atualizado com sucesso! Deseja repetir? (s/n)");
+		scanf(" %c", &repetir);
+
+		if (repetir == 's' || repetir == 'S') {
+			editaValores();
+		}
+		else if (repetir == 'n' || repetir == 'N') {
+			break;
+		}
 	case 8:
-		system("cls");
-		printf("\nValor atual = %d \nNovo: ", numAlunos);
-		scanf("%d", &numAlunos);
+		printf("\nValor atual = %f \nNovo: ", numAlunos);
+		scanf("%f", &numAlunos);
 		while (numAlunos < 0.0) {
 			printf("\nValor invalido! Tente de novo:");
-			scanf("%d", &numAlunos);
+			scanf("%f", &numAlunos);
 		}
-		printf("\nValor atualizado com sucesso!");
-		break;
+		tabelaGerais[opcao - 1] = numAlunos;
+		
+		printf("Valor atualizado com sucesso! Deseja repetir? (s/n)");
+		scanf(" %c", &repetir);
+
+		if (repetir == 's' || repetir == 'S') {
+			editaValores();
+		}
+		else if (repetir == 'n' || repetir == 'N') {
+			break;
+		}
 	case 9:
-		system("cls");
-		printf("\nValor atual = %d \nNovo: ", numStaff);
-		scanf("%d", &numStaff);
+		printf("\nValor atual = %f \nNovo: ", numStaff);
+		scanf("%f", &numStaff);
 		while (numStaff < 0.0) {
 			printf("\nValor invalido! Tente de novo:");
-			scanf("%d", &numStaff);
+			scanf("%f", &numStaff);
 		}
-		printf("\nValor atualizado com sucesso!");
-		break;
+		tabelaGerais[opcao - 1] = numStaff;
+		
+		printf("Valor atualizado com sucesso! Deseja repetir? (s/n)");
+		scanf(" %c", &repetir);
+
+		if (repetir == 's' || repetir == 'S') {
+			editaValores();
+		}
+		else if (repetir == 'n' || repetir == 'N') {
+			break;
+		}
 	case 10:
-		system("cls");
 		printf("\nValor atual = %f \nNovo: ", totOrdenados);
 		scanf("%f", &totOrdenados);
 		while (totOrdenados < 0.0) {
 			printf("\nValor invalido! Tente de novo:");
 			scanf("%f", &totOrdenados);
 		}
-		printf("\nValor atualizado com sucesso!");
-		break;
+		tabelaGerais[opcao - 1] = totOrdenados;
+		
+		printf("Valor atualizado com sucesso! Deseja repetir? (s/n)");
+		scanf(" %c", &repetir);
+
+		if (repetir == 's' || repetir == 'S') {
+			editaValores();
+		}
+		else if (repetir == 'n' || repetir == 'N') {
+			break;
+		}
 	case 11:
-		system("cls");
 		break;
 	}
+
+	dadosGerais = fopen("info_geral.txt", "w+");
+	for (i = 0; i < 10; i++) {
+		fprintf(dadosGerais, "%f", tabelaGerais[i]);
+		fprintf(dadosGerais, "%s", " ");
+	}
+	printf("Ficheiro atualizado com sucesso!");
+	fclose(dadosGerais);
 }
 
 void editaDados() {
