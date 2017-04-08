@@ -54,8 +54,8 @@ float totVazias = 0.0; //kwH
 float totalElec = 0.0 ; //kwH -> soma das três anteriores
 
 //definidos pelo utilizador - para efeitos de cálculo
-int numAlunos = 0.0; //alunos a frequentar ativamente a escola
-int numStaff = 0.0; //professores, funcionários e seguranças a exercer funções
+int numAlunos = 0; //alunos a frequentar ativamente a escola
+int numStaff = 0; //professores, funcionários e seguranças a exercer funções
 float orcamentoMensal = 0.0; //euros
 float horasFuncionamento = 0.0; //período horário
 float custoAgua = 0.0; //preço/metro cubico
@@ -132,11 +132,9 @@ void leituraFicheiro(char *file) {
 		}
 	}
 	totalElec = totCheias + totPonta + totVazias;
-	
+
 	fclose(dados);
 }
-
-
 
 void editaValores() {
 	int opcao;
@@ -155,100 +153,100 @@ void editaValores() {
 	case 1:
 		system("cls");
 		printf("\nValor atual = %f \nNovo: ", orcamentoMensal);
-		scanf("%f", orcamentoMensal);
+		scanf("%f", &orcamentoMensal);
 		while (orcamentoMensal < 0.0) {
 			printf("\nValor invalido! Tente de novo:");
-			scanf("%f", orcamentoMensal);
+			scanf("%f", &orcamentoMensal);
 		}
 		printf("\nValor atualizado com sucesso!");
 		break;
 	case 2:
 		system("cls");
 		printf("\nValor atual = %f \nNovo: ", horasFuncionamento);
-		scanf("%f", horasFuncionamento);
+		scanf("%f", &horasFuncionamento);
 		while (horasFuncionamento < 0.0) {
 			printf("\nValor invalido! Tente de novo:");
-			scanf("%f", horasFuncionamento);
+			scanf("%f", &horasFuncionamento);
 		}
 		printf("\nValor atualizado com sucesso!");
 		break;
 	case 3:
 		system("cls");
 		printf("\nValor atual = %f \nNovo: ", custoAgua);
-		scanf("%f", custoAgua);
+		scanf("%f", &custoAgua);
 		while (custoAgua < 0.0) {
 			printf("\nValor invalido! Tente de novo:");
-			scanf("%f", custoAgua);
+			scanf("%f", &custoAgua);
 		}
 		printf("\nValor atualizado com sucesso!");
 		break;
 	case 4:
 		system("cls");
 		printf("\nValor atual = %f \nNovo: ", custoGas);
-		scanf("%f", custoGas);
+		scanf("%f", &custoGas);
 		while (custoGas < 0.0) {
 			printf("\nValor invalido! Tente de novo:");
-			scanf("%f", custoGas);
+			scanf("%f", &custoGas);
 		}
 		printf("\nValor atualizado com sucesso!");
 		break;
 	case 5:
 		system("cls");
 		printf("\nValor atual = %f \nNovo: ", custoEleticidadeCheio);
-		scanf("%f", custoEleticidadeCheio);
+		scanf("%f", &custoEleticidadeCheio);
 		while (custoEleticidadeCheio < 0.0) {
 			printf("\nValor invalido! Tente de novo:");
-			scanf("%f", custoEleticidadeCheio);
+			scanf("%f", &custoEleticidadeCheio);
 		}
 		printf("\nValor atualizado com sucesso!");
 		break;
 	case 6:
 		system("cls");
 		printf("\nValor atual = %f \nNovo: ", custoEleticidadePonta);
-		scanf("%f", custoEleticidadePonta);
+		scanf("%f", &custoEleticidadePonta);
 		while (custoEleticidadePonta < 0.0) {
 			printf("\nValor invalido! Tente de novo:");
-			scanf("%f", custoEleticidadePonta);
+			scanf("%f", &custoEleticidadePonta);
 		}
 		printf("\nValor atualizado com sucesso!");
 		break;
 	case 7:
 		system("cls");
 		printf("\nValor atual = %f \nNovo: ", custoEleticidadeVazio);
-		scanf("%f", custoEleticidadeVazio);
+		scanf("%f", &custoEleticidadeVazio);
 		while (custoEleticidadeVazio < 0.0) {
 			printf("\nValor invalido! Tente de novo:");
-			scanf("%f", custoEleticidadeVazio);
+			scanf("%f", &custoEleticidadeVazio);
 		}
 		printf("\nValor atualizado com sucesso!");
 		break;
 	case 8:
 		system("cls");
-		printf("\nValor atual = %f \nNovo: ", numAlunos);
-		scanf("%f", numAlunos);
+		printf("\nValor atual = %d \nNovo: ", numAlunos);
+		scanf("%d", &numAlunos);
 		while (numAlunos < 0.0) {
 			printf("\nValor invalido! Tente de novo:");
-			scanf("%f", numAlunos);
+			scanf("%d", &numAlunos);
 		}
 		printf("\nValor atualizado com sucesso!");
 		break;
 	case 9:
 		system("cls");
-		printf("\nValor atual = %f \nNovo: ", numStaff);
-		scanf("%f", numStaff);
+		printf("\nValor atual = %d \nNovo: ", numStaff);
+		scanf("%d", &numStaff);
 		while (numStaff < 0.0) {
 			printf("\nValor invalido! Tente de novo:");
-			scanf("%f", numStaff);
+			scanf("%d", &numStaff);
 		}
 		printf("\nValor atualizado com sucesso!");
 		break;
 	case 10:
 		system("cls");
 		printf("\nValor atual = %f \nNovo: ", totOrdenados);
-		scanf("%f", totOrdenados);
+		scanf("%f", &totOrdenados);
 		while (totOrdenados < 0.0) {
 			printf("\nValor invalido! Tente de novo:");
-			scanf("%f", totOrdenados);
+			scanf("%f", &totOrdenados);
 		}
 		printf("\nValor atualizado com sucesso!");
 		break;
@@ -259,8 +257,145 @@ void editaValores() {
 }
 
 void editaDados() {
-	
+	FILE *entrada, *saida;
+	int m, atualizador;
+	float novoAguaMes, novoGasMes, novoCheiaMes, novoPontaMes, novoVazioMes;
+	char repetir;
 
+	entrada = fopen("dados.txt", "r+");
+	for (i = 0; i < 12; i++) {
+		for (j = 0; j < 5; j++) {
+			fscanf(entrada, "%f", &tabelaDados[i][j]);
+		}
+	}
+	fclose(entrada);
+
+	system("cls");
+	printf("Em que mes (em valor numerico) pretende alterar dados: ");
+	scanf("%d", &m);
+	while (m < 1 || m > 12) {
+		printf("Valor invalido! Tente de novo: ");
+		scanf("%d", &m);
+	}
+	
+	system("cls");
+	printf("Que valor pretende atualizar: \nAgua (1); \nGas (2); \nConsumo Cheio (3); \nConsumo Ponta (4); \nConsumo Vazio (5);\nSair (6); \n");
+	scanf("%d", &atualizador);
+	while (atualizador < 1 || atualizador > 5) {
+		printf("Valor invalido! Tente de novo: ");
+		scanf("%d", &atualizador);
+	}
+
+	switch (atualizador) {
+	case 1:
+		printf("Valor atual = %f \nNovo: ", tabelaDados[m - 1][0]);
+		scanf("%f", &novoAguaMes);
+
+		while (novoAguaMes < 0) {
+			printf("Valor invalido! Tente de novo: ");
+			scanf("%f", &novoAguaMes);
+		}
+
+		tabelaDados[m - 1][0] = novoAguaMes;
+		printf("Valor atualizado com sucesso! Deseja repetir? (s/n)");
+		scanf(" %c", &repetir);
+
+		if (repetir == 's' || repetir == 'S') {
+			editaDados();
+		}
+		else if (repetir == 'n' || repetir == 'N') {
+			break;
+		}
+	case 2:
+		printf("Valor atual = %f \nNovo: ", tabelaDados[m - 1][1]);
+		scanf("%f", &novoGasMes);
+
+		while (novoGasMes < 0) {
+			printf("Valor invalido! Tente de novo: ");
+			scanf("%f", &novoGasMes);
+		}
+
+		tabelaDados[m - 1][1] = novoAguaMes;
+		printf("Valor atualizado com sucesso! Deseja repetir? (s/n)");
+		scanf(" %c", &repetir);
+
+		if (repetir == 's' || repetir == 'S') {
+			editaDados();
+		}
+		else if (repetir == 'n' || repetir == 'N') {
+			break;
+		}
+	case 3:
+		printf("Valor atual = %f \nNovo: ", tabelaDados[m - 1][2]);
+		scanf("%f", &novoCheiaMes);
+
+		while (novoCheiaMes < 0) {
+			printf("Valor invalido! Tente de novo: ");
+			scanf("%f", &novoCheiaMes);
+		}
+
+		tabelaDados[m - 1][3] = novoCheiaMes;
+		printf("Valor atualizado com sucesso! Deseja repetir? (s/n)");
+		scanf(" %c", &repetir);
+
+		if (repetir == 's' || repetir == 'S') {
+			editaDados();
+		}
+		else if (repetir == 'n' || repetir == 'N') {
+			break;
+		}
+	case 4:
+		printf("Valor atual = %f \nNovo: ", tabelaDados[m - 1][3]);
+		scanf("%f", &novoPontaMes);
+
+		while (novoPontaMes < 0) {
+			printf("Valor invalido! Tente de novo: ");
+			scanf("%f", &novoPontaMes);
+		}
+
+		tabelaDados[m - 1][3] = novoPontaMes;
+		printf("Valor atualizado com sucesso! Deseja repetir? (s/n)");
+		scanf(" %c", &repetir);
+
+		if (repetir == 's' || repetir == 'S') {
+			editaDados();
+		}
+		else if (repetir == 'n' || repetir == 'N') {
+			break;
+		}
+	case 5:
+		printf("Valor atual = %f \nNovo: ", tabelaDados[m - 1][4]);
+		scanf("%f", &novoVazioMes);
+
+		while (novoVazioMes < 0) {
+			printf("Valor invalido! Tente de novo: ");
+			scanf("%f", &novoVazioMes);
+		}
+
+		tabelaDados[m - 1][4] = novoVazioMes;
+		printf("Valor atualizado com sucesso! Deseja repetir? (s/n)");
+		scanf(" %c", &repetir);
+
+		if (repetir == 's' || repetir == 'S') {
+			editaDados();
+		}
+		else if (repetir == 'n' || repetir == 'N') {
+			break;
+		}
+	case 6:
+		break;
+	}
+
+	saida = fopen("dados.txt", "w");
+	for (i = 0; i < 12; i++) {
+		for (j = 0; j < 5; j++) {
+			fprintf(saida, "%f", tabelaDados[i][j]);
+			fprintf(saida, "%s", " ");
+		}
+		fprintf(saida, "%s", "\n");
+	}
+	printf("Ficheiro atualizado com sucesso!");
+	fclose(saida);
 }
 
 void menuEdicao(int value) {
