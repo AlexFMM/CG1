@@ -113,6 +113,16 @@ int i, j;
 //	Funções ////////////////////////////////////////////////////////////////////
 //
 
+//protótipos de funções a usar
+void leituraFicheiro(char *file);
+void editaDados();
+void editaValores();
+void processamentoDados();
+void menuEdicao(int value);
+
+//
+
+
 //	Leitura e processamento do ficheiro de dados ///////////////////////////////
 void leituraFicheiro(char *file) {
 	if ((dados = fopen(file, "r+")) == NULL) {
@@ -587,17 +597,6 @@ void editaDados() {
 	processamentoDados();
 }
 
-//chamadas da função consoante a escolha do utilizador do menu
-//que surge com o pressionar da tecla direita do rato
-void menuEdicao(int value) {
-	if (value == 1) {
-		editaValores();
-	}
-	if (value == 2) {
-		editaDados();
-	}
-}
-
 void processamentoDados() {
 	//percentagens
 	percentagemAlunos = numAlunos / (numAlunos + numStaff);
@@ -641,6 +640,17 @@ void processamentoDados() {
 		gastoAguaMensal[i] = custoAgua * aguaMes[i];
 		gastoGasMensal[i] = custoGas * gasMes[i];
 		gastoEletricidadeMensalTotal[i] = (custoEleticidadeCheio * cheiasMes[i]) + (custoEleticidadePonta * pontaMes[i]) + (custoEleticidadeVazio * vaziasMes[i]);
+	}
+}
+
+//chamadas da função consoante a escolha do utilizador do menu
+//que surge com o pressionar da tecla direita do rato
+void menuEdicao(int value) {
+	if (value == 1) {
+		editaValores();
+	}
+	if (value == 2) {
+		editaDados();
 	}
 }
 
