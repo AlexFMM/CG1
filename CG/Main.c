@@ -36,9 +36,9 @@ int menuh = 600;
 
 GLboolean hide;
 
-int hover=0;
-int active=1;
-int button[3][2] = { {75,110}, {125,160}, {175,210} };
+int hover = 0;
+int active = 1;
+int button[3][2] = { { 75,110 },{ 125,160 },{ 175,210 } };
 
 FILE *dados;
 FILE *logFile;
@@ -51,9 +51,9 @@ float totGas = 0.0; //metros cubicos
 float totCheias = 0.0; //kwH
 float totPonta = 0.0; //kwH
 float totVazias = 0.0; //kwH
-float totalElec = 0.0 ; //kwH -> soma das três anteriores
+float totalElec = 0.0; //kwH -> soma das três anteriores
 
-//definidos pelo utilizador - para efeitos de cálculo
+					   //definidos pelo utilizador - para efeitos de cálculo
 float numAlunos = 0.0; //alunos a frequentar ativamente a escola
 float numStaff = 0.0; //professores, funcionários e seguranças a exercer funções
 float orcamentoAnual = 0.0; //euros
@@ -66,6 +66,7 @@ float custoEleticidadeVazio = 0.0; //preço/kwH
 float totOrdenados = 0.0; //euros -> à partida valor fixo
 
 //consumos por... -> para função de processamento
+//consumos anuais -> para dados gerais
 float consumoAguaAluno = 0.0;
 float consumoAguaHora = 0.0;
 float consumoAguaStaff = 0.0;
@@ -88,6 +89,13 @@ float gastosPonta = 0.0;
 float gastosVazio = 0.0;
 float totalGastosAnuais = 0.0;
 
+//faz luz(total cheias + vazias + ponta) agua e gas
+
+//consumos manuais -> para gráficos
+float gastoEletricidadeMensalTotal[12];
+float gastoAguaMensal[12];
+float gastoGasMensal[12];
+
 //tratamento/edição de dados
 float tabelaDados[12][5]; //12 linhas => meses por 7 colunas => valores de sobra a escola + valores de gastos
 float tabelaGerais[10];
@@ -97,8 +105,6 @@ float gasMes[12];
 float cheiasMes[12];
 float pontaMes[12];
 float vaziasMes[12];
-
-//vetores com valores presentes nos dados
 
 //contadores para funções
 int i, j;
@@ -169,7 +175,7 @@ void leituraFicheiro(char *file) {
 void editaValores() { //edição de valores gerais, definidos pelo utilizador
 	int opcao;
 	char repetir;
-	
+
 	//os valores serão armazendados num ficheiro para o propósito, caso não exista
 	//é inicializado com valores todos a 0!
 	if ((dadosGerais = fopen("info_geral.txt", "r+")) == NULL) {
@@ -203,7 +209,7 @@ void editaValores() { //edição de valores gerais, definidos pelo utilizador
 
 	switch (opcao) {
 	case 1:
-		printf("\nValor atual = %f \nNovo: ", tabelaGerais[opcao-1]);
+		printf("\nValor atual = %f \nNovo: ", tabelaGerais[opcao - 1]);
 		scanf("%f", &orcamentoAnual);
 		while (orcamentoAnual < 0.0) {
 			printf("\nValor invalido! Tente de novo:");
@@ -310,7 +316,7 @@ void editaValores() { //edição de valores gerais, definidos pelo utilizador
 			scanf("%f", &custoEleticidadePonta);
 		}
 		tabelaGerais[opcao - 1] = custoEleticidadePonta;
-		
+
 		printf("Valor atualizado com sucesso! Deseja repetir? (s/n)");
 		scanf(" %c", &repetir);
 
@@ -360,7 +366,7 @@ void editaValores() { //edição de valores gerais, definidos pelo utilizador
 		else if (repetir == 'n' || repetir == 'N') {
 			break;
 		}
-		
+
 		break;
 	case 9:
 		printf("\nValor atual = %f \nNovo: ", tabelaGerais[opcao - 1]);
@@ -370,7 +376,7 @@ void editaValores() { //edição de valores gerais, definidos pelo utilizador
 			scanf("%f", &numStaff);
 		}
 		tabelaGerais[opcao - 1] = numStaff;
-		
+
 		printf("Valor atualizado com sucesso! Deseja repetir? (s/n)");
 		scanf(" %c", &repetir);
 
@@ -443,7 +449,7 @@ void editaDados() {
 		printf("Valor invalido! Tente de novo: ");
 		scanf("%d", &m);
 	}
-	
+
 	system("cls");
 	printf("Que valor pretende atualizar: \nAgua (1); \nGas (2); \nConsumo Cheio (3); \nConsumo Ponta (4); \nConsumo Vazio (5);\nSair (6); \n");
 	scanf("%d", &atualizador);
@@ -619,6 +625,7 @@ void processamentoDados() {
 	consumoEletricidadeHora = totalElec / totHorasFuncionamento;
 
 	//gastos
+	//anual
 	gastosAgua = totAgua * custoAgua;
 	gastosGas = totGas * custoGas;
 	gastosCheio = totCheias * custoEleticidadeCheio;
@@ -628,6 +635,13 @@ void processamentoDados() {
 
 	totalGastosAnuais = gastosAgua + gastosGas + gastosElec + totOrdenados;
 	balancoContas = orcamentoAnual - totalGastosAnuais;
+
+	//mensal
+	for (int i = 0; i < 12; i++) {
+		gastoAguaMensal[i] = custoAgua * aguaMes[i];
+		gastoGasMensal[i] = custoGas * gasMes[i];
+		gastoEletricidadeMensalTotal[i] = (custoEleticidadeCheio * cheiasMes[i]) + (custoEleticidadePonta * pontaMes[i]) + (custoEleticidadeVazio * vaziasMes[i]);
+	}
 }
 
 //	Funções de desenho /////////////////////////////////////////////////////////
@@ -666,7 +680,7 @@ void menuAnim() {
 
 void keyboardControl(char key, int x, int y) {
 	if (key == 'Q' || key == 'q' || key == 27)
-		exit(0);	
+		exit(0);
 }
 
 void MouseButton(int button, int state, int x, int y) {
@@ -694,7 +708,7 @@ void MouseMotion(int x, int y) {
 			if (y > 75 && y < 110) {
 				hover = 1;
 			}
-			else if(y > 125 && y < 160) {
+			else if (y > 125 && y < 160) {
 				hover = 2;
 			}
 			else if (y > 175 && y < 210) {
@@ -719,7 +733,7 @@ void drawText(char *s, int x, int y) {
 	}
 }
 
-void menuButton(){
+void menuButton() {
 	glBegin(GL_POLYGON);
 	glVertex2i(10, menuh - 10);
 	glVertex2i(10, menuh - 12);
@@ -753,10 +767,10 @@ void drawMenu() {
 	glColor3f(0, 0, 0);
 	menuButton();
 
-	glColor3f(54/255.0, 77/255.0, 226/255.0);
+	glColor3f(54 / 255.0, 77 / 255.0, 226 / 255.0);
 	if (hover != 0) {
 		glBegin(GL_POLYGON);
-		glVertex2i(0, menuh - button[hover-1][0]);
+		glVertex2i(0, menuh - button[hover - 1][0]);
 		glVertex2i(0, menuh - button[hover - 1][1]);
 		glVertex2i(menuw, menuh - button[hover - 1][1]);
 		glVertex2i(menuw, menuh - button[hover - 1][0]);
@@ -772,17 +786,17 @@ void drawMenu() {
 	glVertex2i(0, menuh - button[active - 1][0]);
 	glEnd();
 
-	
+
 	drawText("Dados Gerais", 50, 100);
 	drawText("Consumos", 50, 150);
 	drawText("Gastos", 50, 200);
 }
 
-void display(void){
+void display(void) {
 	glClear(GL_COLOR_BUFFER_BIT);
 	//Menu
 	glViewport(0, 0, winw, winh);
-	glColor3f(1,1,1);
+	glColor3f(1, 1, 1);
 	menuButton();
 	glPushMatrix();
 	glTranslatef(menuw - 300, 0, 0);
@@ -798,7 +812,7 @@ void display(void){
 //	Programa Principal /////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-int main(int argc, char** argv){
+int main(int argc, char** argv) {
 	//Lê ficheiros -  se não existir na diretoria o programa não arranca de todo.
 	leituraFicheiro("dados.txt");
 
