@@ -56,7 +56,7 @@ float totalElec = 0.0 ; //kwH -> soma das três anteriores
 //definidos pelo utilizador - para efeitos de cálculo
 float numAlunos = 0.0; //alunos a frequentar ativamente a escola
 float numStaff = 0.0; //professores, funcionários e seguranças a exercer funções
-float orcamentoMensal = 0.0; //euros
+float orcamentoAnual = 0.0; //euros
 float horasFuncionamento = 0.0; //período horário
 float custoAgua = 0.0; //preço/metro cubico
 float custoGas = 0.0; //preço/metro cubico
@@ -64,6 +64,29 @@ float custoEleticidadeCheio = 0.0; //preço/kwH
 float custoEleticidadePonta = 0.0; //preço/kwH
 float custoEleticidadeVazio = 0.0; //preço/kwH
 float totOrdenados = 0.0; //euros -> à partida valor fixo
+
+//consumos por... -> para função de processamento
+float consumoAguaAluno = 0.0;
+float consumoAguaHora = 0.0;
+float consumoAguaStaff = 0.0;
+float consumoGasAluno = 0.0;
+float consumoGasHora = 0.0;
+float consumoGasStaff = 0.0;
+float consumoEletricidadeAluno = 0.0;
+float consumoEletricidadeHora = 0.0;
+float consumoEletricidadeStaff = 0.0;
+float ordenadoMedio = 0.0;
+float percentagemAlunos = 0.0;
+float percentagemStaff = 0.0;
+float balancoContas = 0.0;
+float totHorasFuncionamento = 0.0;
+float gastosAgua = 0.0;
+float gastosGas = 0.0;
+float gastosElec = 0.0;
+float gastosCheio = 0.0;
+float gastosPonta = 0.0;
+float gastosVazio = 0.0;
+float totalGastosAnuais = 0.0;
 
 //tratamento/edição de dados
 float tabelaDados[12][5]; //12 linhas => meses por 7 colunas => valores de sobra a escola + valores de gastos
@@ -135,6 +158,8 @@ void leituraFicheiro(char *file) {
 	totalElec = totCheias + totPonta + totVazias;
 
 	fclose(dados);
+
+	processamentoDados();
 }
 
 //	Edição de dados, quer nos vetores criados como ficheiros ///////////////////
@@ -179,12 +204,12 @@ void editaValores() { //edição de valores gerais, definidos pelo utilizador
 	switch (opcao) {
 	case 1:
 		printf("\nValor atual = %f \nNovo: ", tabelaGerais[opcao-1]);
-		scanf("%f", &orcamentoMensal);
-		while (orcamentoMensal < 0.0) {
+		scanf("%f", &orcamentoAnual);
+		while (orcamentoAnual < 0.0) {
 			printf("\nValor invalido! Tente de novo:");
-			scanf("%f", &orcamentoMensal);
+			scanf("%f", &orcamentoAnual);
 		}
-		tabelaGerais[opcao - 1] = orcamentoMensal;
+		tabelaGerais[opcao - 1] = orcamentoAnual;
 
 		printf("Valor atualizado com sucesso! Deseja repetir? (s/n)");
 		scanf(" %c", &repetir);
@@ -389,6 +414,8 @@ void editaValores() { //edição de valores gerais, definidos pelo utilizador
 	}
 	printf("\nFicheiro atualizado com sucesso!");
 	fclose(dadosGerais);
+
+	processamentoDados();
 }
 
 //funciona de modo análogo com a anterior função, com a diferença que,
@@ -550,6 +577,8 @@ void editaDados() {
 	}
 	printf("\nFicheiro atualizado com sucesso!");
 	fclose(saida);
+
+	processamentoDados();
 }
 
 //chamadas da função consoante a escolha do utilizador do menu
@@ -561,6 +590,44 @@ void menuEdicao(int value) {
 	if (value == 2) {
 		editaDados();
 	}
+}
+
+void processamentoDados() {
+	//percentagens
+	percentagemAlunos = numAlunos / (numAlunos + numStaff);
+	percentagemStaff = numStaff / (numAlunos + numStaff);
+
+	//ordenados
+	ordenadoMedio = totOrdenados / numStaff;
+
+	//horas de funcionamento -> vamos considerar que a escola está aberta 365 dias/ano
+	totHorasFuncionamento = 365 * horasFuncionamento;
+
+	//consumos por aluno
+	consumoAguaAluno = (totAgua / (numAlunos + numStaff)) * percentagemAlunos;
+	consumoGasAluno = (totGas / (numAlunos + numStaff)) * percentagemAlunos;
+	consumoEletricidadeAluno = (totalElec / (numAlunos + numStaff)) * percentagemAlunos;
+
+	//consumos por membro de staff
+	consumoAguaStaff = (totAgua / (numAlunos + numStaff)) * percentagemStaff;
+	consumoGasStaff = (totGas / (numAlunos + numStaff)) * percentagemStaff;
+	consumoEletricidadeStaff = (totalElec / (numAlunos + numStaff)) * percentagemStaff;
+
+	//consumos por hora
+	consumoAguaHora = totAgua / totHorasFuncionamento;
+	consumoGasHora = totGas / totHorasFuncionamento;
+	consumoEletricidadeHora = totalElec / totHorasFuncionamento;
+
+	//gastos
+	gastosAgua = totAgua * custoAgua;
+	gastosGas = totGas * custoGas;
+	gastosCheio = totCheias * custoEleticidadeCheio;
+	gastosPonta = totPonta * custoEleticidadePonta;
+	gastosVazio = totVazias * custoEleticidadeVazio;
+	gastosElec = gastosCheio + gastosPonta + gastosVazio;
+
+	totalGastosAnuais = gastosAgua + gastosGas + gastosElec + totOrdenados;
+	balancoContas = orcamentoAnual - totalGastosAnuais;
 }
 
 //	Funções de desenho /////////////////////////////////////////////////////////
