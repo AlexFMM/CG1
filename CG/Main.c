@@ -134,12 +134,12 @@ void leituraFicheiro(char *file) {
 		time_t t = time(NULL);
 		struct tm *tm = localtime(&t);
 
-		printf("Leitura efetuada com sucesso! \nData: %s", asctime(tm));
+		printf("Login efetuado com sucesso! \nData: %s", asctime(tm));
 
 		if ((logFile = fopen("logs.txt", "a")) == NULL) {
 			logFile = fopen("logs.txt", "wb+");
 		}
-		fprintf(logFile, "Leitura efetuada em: %s", asctime(tm));
+		fprintf(logFile, "Login efetuada em: %s", asctime(tm));
 
 		fclose(logFile);
 	}
