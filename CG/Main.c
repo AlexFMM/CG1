@@ -148,27 +148,24 @@ void editaValores() { //edição de valores gerais, definidos pelo utilizador
 	//os valores serão armazendados num ficheiro para o propósito, caso não exista
 	//é inicializado com valores todos a 0!
 	if ((dadosGerais = fopen("info_geral.txt", "r+")) == NULL) {
-		dadosGerais = fopen("info_geral.txt", "w+");
 		for (i = 0; i < 10; i++) {
 			tabelaGerais[i] = 0.0;
 		}
+
+		dadosGerais = fopen("info_geral.txt", "w+");
 		for (i = 0; i < 10; i++) {
-			fprintf(dadosGerais, "%.2f", tabelaGerais[i]);
+			fprintf(dadosGerais, "%f", tabelaGerais[i]);
 			fprintf(dadosGerais, "%s", " ");
 		}
 	}
 	else {
 		for (i = 0; i < 10; i++) {
-			fscanf(dadosGerais, "%.2f", &tabelaGerais[i]);
+			fscanf(dadosGerais, "%f", &tabelaGerais[i]);
 		}
-		fclose(dadosGerais);
 	}
+	fclose(dadosGerais);
 
-	for (i = 0; i < 10; i++) {
-		printf("%.2f, ", tabelaGerais[i]);
-	}
-	
-	//system("cls");
+	system("cls");
 	printf("Que valores deseja editar: \nOrcamento (1); \nNumero de horas de funcionamento (2); ");
 	printf("\nCusto da Agua/m3 (3); \nCusto do Gas/m3 (4)");
 	printf("\nCusto de horario cheias/KwH (5); \nCusto de horario ponta/KwH (6); \nCusto de horario vazio/KwH (7);");
@@ -198,6 +195,8 @@ void editaValores() { //edição de valores gerais, definidos pelo utilizador
 		else if (repetir == 'n' || repetir == 'N') {
 			break;
 		}
+
+		break;
 	case 2:
 		printf("\nValor atual = %f \nNovo: ", tabelaGerais[opcao - 1]);
 		scanf("%f", &horasFuncionamento);
@@ -206,7 +205,7 @@ void editaValores() { //edição de valores gerais, definidos pelo utilizador
 			scanf("%f", &horasFuncionamento);
 		}
 		tabelaGerais[opcao - 1] = horasFuncionamento;
-		
+
 		printf("Valor atualizado com sucesso! Deseja repetir? (s/n)");
 		scanf(" %c", &repetir);
 
@@ -216,6 +215,8 @@ void editaValores() { //edição de valores gerais, definidos pelo utilizador
 		else if (repetir == 'n' || repetir == 'N') {
 			break;
 		}
+
+		break;
 	case 3:
 		printf("\nValor atual = %f \nNovo: ", tabelaGerais[opcao - 1]);
 		scanf("%f", &custoAgua);
@@ -224,7 +225,7 @@ void editaValores() { //edição de valores gerais, definidos pelo utilizador
 			scanf("%f", &custoAgua);
 		}
 		tabelaGerais[opcao - 1] = custoAgua;
-		
+
 		printf("Valor atualizado com sucesso! Deseja repetir? (s/n)");
 		scanf(" %c", &repetir);
 
@@ -234,6 +235,8 @@ void editaValores() { //edição de valores gerais, definidos pelo utilizador
 		else if (repetir == 'n' || repetir == 'N') {
 			break;
 		}
+
+		break;
 	case 4:
 		printf("\nValor atual = %f \nNovo: ", tabelaGerais[opcao - 1]);
 		scanf("%f", &custoGas);
@@ -242,7 +245,7 @@ void editaValores() { //edição de valores gerais, definidos pelo utilizador
 			scanf("%f", &custoGas);
 		}
 		tabelaGerais[opcao - 1] = custoGas;
-		
+
 		printf("Valor atualizado com sucesso! Deseja repetir? (s/n)");
 		scanf(" %c", &repetir);
 
@@ -252,6 +255,8 @@ void editaValores() { //edição de valores gerais, definidos pelo utilizador
 		else if (repetir == 'n' || repetir == 'N') {
 			break;
 		}
+
+		break;
 	case 5:
 		printf("\nValor atual = %f \nNovo: ", tabelaGerais[opcao - 1]);
 		scanf("%f", &custoEleticidadeCheio);
@@ -260,7 +265,7 @@ void editaValores() { //edição de valores gerais, definidos pelo utilizador
 			scanf("%f", &custoEleticidadeCheio);
 		}
 		tabelaGerais[opcao - 1] = custoEleticidadeCheio;
-		
+
 		printf("Valor atualizado com sucesso! Deseja repetir? (s/n)");
 		scanf(" %c", &repetir);
 
@@ -270,6 +275,8 @@ void editaValores() { //edição de valores gerais, definidos pelo utilizador
 		else if (repetir == 'n' || repetir == 'N') {
 			break;
 		}
+
+		break;
 	case 6:
 		printf("\nValor atual = %f \nNovo: ", tabelaGerais[opcao - 1]);
 		scanf("%f", &custoEleticidadePonta);
@@ -288,6 +295,8 @@ void editaValores() { //edição de valores gerais, definidos pelo utilizador
 		else if (repetir == 'n' || repetir == 'N') {
 			break;
 		}
+
+		break;
 	case 7:
 		printf("\nValor atual = %f \nNovo: ", tabelaGerais[opcao - 1]);
 		scanf("%f", &custoEleticidadeVazio);
@@ -296,7 +305,7 @@ void editaValores() { //edição de valores gerais, definidos pelo utilizador
 			scanf("%f", &custoEleticidadeVazio);
 		}
 		tabelaGerais[opcao - 1] = custoEleticidadeVazio;
-		
+
 		printf("Valor atualizado com sucesso! Deseja repetir? (s/n)");
 		scanf(" %c", &repetir);
 
@@ -306,6 +315,8 @@ void editaValores() { //edição de valores gerais, definidos pelo utilizador
 		else if (repetir == 'n' || repetir == 'N') {
 			break;
 		}
+
+		break;
 	case 8:
 		printf("\nValor atual = %f \nNovo: ", tabelaGerais[opcao - 1]);
 		scanf("%f", &numAlunos);
@@ -314,7 +325,7 @@ void editaValores() { //edição de valores gerais, definidos pelo utilizador
 			scanf("%f", &numAlunos);
 		}
 		tabelaGerais[opcao - 1] = numAlunos;
-		
+
 		printf("Valor atualizado com sucesso! Deseja repetir? (s/n)");
 		scanf(" %c", &repetir);
 
@@ -324,6 +335,8 @@ void editaValores() { //edição de valores gerais, definidos pelo utilizador
 		else if (repetir == 'n' || repetir == 'N') {
 			break;
 		}
+		
+		break;
 	case 9:
 		printf("\nValor atual = %f \nNovo: ", tabelaGerais[opcao - 1]);
 		scanf("%f", &numStaff);
@@ -342,6 +355,8 @@ void editaValores() { //edição de valores gerais, definidos pelo utilizador
 		else if (repetir == 'n' || repetir == 'N') {
 			break;
 		}
+
+		break;
 	case 10:
 		printf("\nValor atual = %f \nNovo: ", tabelaGerais[opcao - 1]);
 		scanf("%f", &totOrdenados);
@@ -350,7 +365,7 @@ void editaValores() { //edição de valores gerais, definidos pelo utilizador
 			scanf("%f", &totOrdenados);
 		}
 		tabelaGerais[opcao - 1] = totOrdenados;
-		
+
 		printf("Valor atualizado com sucesso! Deseja repetir? (s/n)");
 		scanf(" %c", &repetir);
 
@@ -360,6 +375,8 @@ void editaValores() { //edição de valores gerais, definidos pelo utilizador
 		else if (repetir == 'n' || repetir == 'N') {
 			break;
 		}
+
+		break;
 	case 11:
 		break;
 	}
@@ -403,7 +420,7 @@ void editaDados() {
 	system("cls");
 	printf("Que valor pretende atualizar: \nAgua (1); \nGas (2); \nConsumo Cheio (3); \nConsumo Ponta (4); \nConsumo Vazio (5);\nSair (6); \n");
 	scanf("%d", &atualizador);
-	while (atualizador < 1 || atualizador > 5) {
+	while (atualizador < 1 || atualizador > 6) {
 		printf("Valor invalido! Tente de novo: ");
 		scanf("%d", &atualizador);
 	}
@@ -430,6 +447,7 @@ void editaDados() {
 		}
 
 		aguaMes[m - 1] = novoAguaMes;
+		break;
 	case 2:
 		printf("Valor atual = %f \nNovo: ", tabelaDados[m - 1][1]);
 		scanf("%f", &novoGasMes);
@@ -451,6 +469,7 @@ void editaDados() {
 		}
 
 		gasMes[m - 1] = novoGasMes;
+		break;
 	case 3:
 		printf("Valor atual = %f \nNovo: ", tabelaDados[m - 1][2]);
 		scanf("%f", &novoCheiaMes);
@@ -472,6 +491,7 @@ void editaDados() {
 		}
 
 		cheiasMes[m - 1] = novoCheiaMes;
+		break;
 	case 4:
 		printf("Valor atual = %f \nNovo: ", tabelaDados[m - 1][3]);
 		scanf("%f", &novoPontaMes);
@@ -493,6 +513,7 @@ void editaDados() {
 		}
 
 		pontaMes[m - 1] = novoPontaMes;
+		break;
 	case 5:
 		printf("Valor atual = %f \nNovo: ", tabelaDados[m - 1][4]);
 		scanf("%f", &novoVazioMes);
@@ -512,8 +533,8 @@ void editaDados() {
 		else if (repetir == 'n' || repetir == 'N') {
 			break;
 		}
-
 		vaziasMes[m - 1] = novoVazioMes;
+		break;
 	case 6:
 		break;
 	}
