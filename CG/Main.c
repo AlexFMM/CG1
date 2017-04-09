@@ -151,20 +151,24 @@ void editaValores() { //edição de valores gerais, definidos pelo utilizador
 		dadosGerais = fopen("info_geral.txt", "w+");
 		for (i = 0; i < 10; i++) {
 			tabelaGerais[i] = 0.0;
-
+		}
+		for (i = 0; i < 10; i++) {
 			fprintf(dadosGerais, "%.2f", tabelaGerais[i]);
 			fprintf(dadosGerais, "%s", " ");
 		}
-		fclose(dadosGerais);
 	}
 	else {
 		for (i = 0; i < 10; i++) {
-			fscanf(dadosGerais, "%.2f", tabelaGerais[i]);
+			fscanf(dadosGerais, "%.2f", &tabelaGerais[i]);
 		}
 		fclose(dadosGerais);
 	}
+
+	for (i = 0; i < 10; i++) {
+		printf("%.2f, ", tabelaGerais[i]);
+	}
 	
-	system("cls");
+	//system("cls");
 	printf("Que valores deseja editar: \nOrcamento (1); \nNumero de horas de funcionamento (2); ");
 	printf("\nCusto da Agua/m3 (3); \nCusto do Gas/m3 (4)");
 	printf("\nCusto de horario cheias/KwH (5); \nCusto de horario ponta/KwH (6); \nCusto de horario vazio/KwH (7);");
@@ -177,7 +181,7 @@ void editaValores() { //edição de valores gerais, definidos pelo utilizador
 
 	switch (opcao) {
 	case 1:
-		printf("\nValor atual = %f \nNovo: ", orcamentoMensal);
+		printf("\nValor atual = %f \nNovo: ", tabelaGerais[opcao-1]);
 		scanf("%f", &orcamentoMensal);
 		while (orcamentoMensal < 0.0) {
 			printf("\nValor invalido! Tente de novo:");
@@ -195,7 +199,7 @@ void editaValores() { //edição de valores gerais, definidos pelo utilizador
 			break;
 		}
 	case 2:
-		printf("\nValor atual = %f \nNovo: ", horasFuncionamento);
+		printf("\nValor atual = %f \nNovo: ", tabelaGerais[opcao - 1]);
 		scanf("%f", &horasFuncionamento);
 		while (horasFuncionamento < 0.0) {
 			printf("\nValor invalido! Tente de novo:");
@@ -213,7 +217,7 @@ void editaValores() { //edição de valores gerais, definidos pelo utilizador
 			break;
 		}
 	case 3:
-		printf("\nValor atual = %f \nNovo: ", custoAgua);
+		printf("\nValor atual = %f \nNovo: ", tabelaGerais[opcao - 1]);
 		scanf("%f", &custoAgua);
 		while (custoAgua < 0.0) {
 			printf("\nValor invalido! Tente de novo:");
@@ -231,7 +235,7 @@ void editaValores() { //edição de valores gerais, definidos pelo utilizador
 			break;
 		}
 	case 4:
-		printf("\nValor atual = %f \nNovo: ", custoGas);
+		printf("\nValor atual = %f \nNovo: ", tabelaGerais[opcao - 1]);
 		scanf("%f", &custoGas);
 		while (custoGas < 0.0) {
 			printf("\nValor invalido! Tente de novo:");
@@ -249,7 +253,7 @@ void editaValores() { //edição de valores gerais, definidos pelo utilizador
 			break;
 		}
 	case 5:
-		printf("\nValor atual = %f \nNovo: ", custoEleticidadeCheio);
+		printf("\nValor atual = %f \nNovo: ", tabelaGerais[opcao - 1]);
 		scanf("%f", &custoEleticidadeCheio);
 		while (custoEleticidadeCheio < 0.0) {
 			printf("\nValor invalido! Tente de novo:");
@@ -267,7 +271,7 @@ void editaValores() { //edição de valores gerais, definidos pelo utilizador
 			break;
 		}
 	case 6:
-		printf("\nValor atual = %f \nNovo: ", custoEleticidadePonta);
+		printf("\nValor atual = %f \nNovo: ", tabelaGerais[opcao - 1]);
 		scanf("%f", &custoEleticidadePonta);
 		while (custoEleticidadePonta < 0.0) {
 			printf("\nValor invalido! Tente de novo:");
@@ -285,7 +289,7 @@ void editaValores() { //edição de valores gerais, definidos pelo utilizador
 			break;
 		}
 	case 7:
-		printf("\nValor atual = %f \nNovo: ", custoEleticidadeVazio);
+		printf("\nValor atual = %f \nNovo: ", tabelaGerais[opcao - 1]);
 		scanf("%f", &custoEleticidadeVazio);
 		while (custoEleticidadeVazio < 0.0) {
 			printf("\nValor invalido! Tente de novo:");
@@ -303,7 +307,7 @@ void editaValores() { //edição de valores gerais, definidos pelo utilizador
 			break;
 		}
 	case 8:
-		printf("\nValor atual = %f \nNovo: ", numAlunos);
+		printf("\nValor atual = %f \nNovo: ", tabelaGerais[opcao - 1]);
 		scanf("%f", &numAlunos);
 		while (numAlunos < 0.0) {
 			printf("\nValor invalido! Tente de novo:");
@@ -321,7 +325,7 @@ void editaValores() { //edição de valores gerais, definidos pelo utilizador
 			break;
 		}
 	case 9:
-		printf("\nValor atual = %f \nNovo: ", numStaff);
+		printf("\nValor atual = %f \nNovo: ", tabelaGerais[opcao - 1]);
 		scanf("%f", &numStaff);
 		while (numStaff < 0.0) {
 			printf("\nValor invalido! Tente de novo:");
@@ -339,7 +343,7 @@ void editaValores() { //edição de valores gerais, definidos pelo utilizador
 			break;
 		}
 	case 10:
-		printf("\nValor atual = %f \nNovo: ", totOrdenados);
+		printf("\nValor atual = %f \nNovo: ", tabelaGerais[opcao - 1]);
 		scanf("%f", &totOrdenados);
 		while (totOrdenados < 0.0) {
 			printf("\nValor invalido! Tente de novo:");
@@ -366,7 +370,7 @@ void editaValores() { //edição de valores gerais, definidos pelo utilizador
 		fprintf(dadosGerais, "%f", tabelaGerais[i]);
 		fprintf(dadosGerais, "%s", " ");
 	}
-	printf("Ficheiro atualizado com sucesso!");
+	printf("\nFicheiro atualizado com sucesso!");
 	fclose(dadosGerais);
 }
 
@@ -523,7 +527,7 @@ void editaDados() {
 		}
 		fprintf(saida, "%s", "\n");
 	}
-	printf("Ficheiro atualizado com sucesso!");
+	printf("\nFicheiro atualizado com sucesso!");
 	fclose(saida);
 }
 
