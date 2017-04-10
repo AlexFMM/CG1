@@ -89,22 +89,23 @@ float gastosPonta = 0.0;
 float gastosVazio = 0.0;
 float totalGastosAnuais = 0.0;
 
-//faz luz(total cheias + vazias + ponta) agua e gas
-
 //consumos manuais -> para gráficos
 float gastoEletricidadeMensalTotal[12];
 float gastoAguaMensal[12];
 float gastoGasMensal[12];
-
-//tratamento/edição de dados
-float tabelaDados[12][5]; //12 linhas => meses por 7 colunas => valores de sobra a escola + valores de gastos
-float tabelaGerais[10];
+float consumoDiarioAguaMensal[12]; //média mensal, para efeitos de simplificação
+float consumoDiarioGasMensal[12]; //média mensal, para efeitos de simplificação
+float consumoDiarioEletricidadeMensal[12]; //média mensal, para efeitos de simplificação
 
 float aguaMes[12];
 float gasMes[12];
 float cheiasMes[12];
 float pontaMes[12];
 float vaziasMes[12];
+
+//tratamento/edição de dados
+float tabelaDados[12][5]; //12 linhas => meses por 7 colunas => valores de sobra a escola + valores de gastos
+float tabelaGerais[10];
 
 //contadores para funções
 int i, j;
@@ -640,6 +641,13 @@ void processamentoDados() {
 		gastoAguaMensal[i] = custoAgua * aguaMes[i];
 		gastoGasMensal[i] = custoGas * gasMes[i];
 		gastoEletricidadeMensalTotal[i] = (custoEleticidadeCheio * cheiasMes[i]) + (custoEleticidadePonta * pontaMes[i]) + (custoEleticidadeVazio * vaziasMes[i]);
+	}
+
+	//diário (a partir de média mensal) -> assumir média de 30 dias por mês (365 dias / 12 meses ~= 30 dias)
+	for (int i = 0; i < 12; i++) {
+		consumoDiarioAguaMensal[i] = aguaMes[i] / 30;
+		consumoDiarioGasMensal[i] = gasMes[i] / 30;
+		consumoDiarioEletricidadeMensal[i] = (cheiasMes[i] + pontaMes[i] + vaziasMes[i]) / 30;
 	}
 }
 
