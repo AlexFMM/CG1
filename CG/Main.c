@@ -16,8 +16,9 @@
 #include <stdlib.h>
 #include <windows.h>
 #include <time.h>
-#include <glut.h>
-#include <glu.h>
+#include <math.h>
+#include <GL/glut.h>
+#include <GL/glu.h>
 //
 //	Definições /////////////////////////////////////////////////////////////////
 //
@@ -33,6 +34,17 @@ int vieh = 600;
 //Size menu
 int menuw = 300;
 int menuh = 600;
+
+//graph positions
+int linex = 400;
+int liney = 100;
+int centerx = 1050;
+int centery = 500;
+int radius = 70;
+int colx = 400;
+int coly = 100;
+
+float ang1, ang2, ang3;
 
 GLboolean hide;
 
@@ -105,6 +117,10 @@ float gasMes[12];
 float cheiasMes[12];
 float pontaMes[12];
 float vaziasMes[12];
+float luz[12];
+float max_luz, max_agua, max_gas;
+float max_cheias, max_vazias, max_ponta;
+float sumT, sumC, sumV, sumP;
 
 //tratamento/edição de dados
 float tabelaDados[12][5]; //12 linhas => meses por 7 colunas => valores de sobra a escola + valores de gastos
@@ -113,12 +129,14 @@ float tabelaGerais[10];
 //contadores para funções
 int i, j;
 
+char buff[255];
+
 //
 //	Funções ////////////////////////////////////////////////////////////////////
 //
 
 //protótipos de funções a usar
-void leituraFicheiro(char *file);
+void leituraFicheiros();
 void editaDados();
 void editaValores();
 void processamentoDados();
@@ -128,8 +146,8 @@ void menuEdicao(int value);
 
 
 //	Leitura e processamento do ficheiro de dados ///////////////////////////////
-void leituraFicheiro(char *file) {
-	if ((dados = fopen(file, "r+")) == NULL) {
+void leituraFicheiros() {
+	if ((dados = fopen("dados.txt", "r+")) == NULL) {
 		printf("Erro: ficheiro inexistente na diretoria!\nPrima <ENTER> para sair.");
 		getchar();
 		exit(0);
@@ -147,6 +165,38 @@ void leituraFicheiro(char *file) {
 
 		fclose(logFile);
 	}
+
+	//obtenção dos dados gerais da escola
+	//os valores serão armazendados num ficheiro para o propósito, caso não exista
+	//é inicializado com valores todos a 0!
+	if ((dadosGerais = fopen("info_geral.txt", "r+")) == NULL) {
+		for (i = 0; i < 10; i++) {
+			tabelaGerais[i] = 0.0;
+		}
+
+		dadosGerais = fopen("info_geral.txt", "w+");
+		for (i = 0; i < 10; i++) {
+			fprintf(dadosGerais, "%f", tabelaGerais[i]);
+			fprintf(dadosGerais, "%s", " ");
+		}
+	}
+	else {
+		for (i = 0; i < 10; i++) {
+			fscanf(dadosGerais, "%f", &tabelaGerais[i]);
+		}
+	}
+	fclose(dadosGerais);
+
+	orcamentoAnual = tabelaGerais[0];
+	horasFuncionamento = tabelaGerais[1];
+	custoAgua = tabelaGerais[2];
+	custoGas = tabelaGerais[3];
+	custoEleticidadeCheio = tabelaGerais[4];
+	custoEleticidadePonta = tabelaGerais[5];
+	custoEleticidadeVazio = tabelaGerais[6];
+	numAlunos = tabelaGerais[7];
+	numStaff = tabelaGerais[8];
+	totOrdenados = tabelaGerais[9];
 
 	//obtenção do total de gastos e vetores com os dados (para gráficos)
 	for (i = 0; i < 12; i++) {
@@ -189,26 +239,6 @@ void leituraFicheiro(char *file) {
 void editaValores() { //edição de valores gerais, definidos pelo utilizador
 	int opcao;
 	char repetir;
-
-	//os valores serão armazendados num ficheiro para o propósito, caso não exista
-	//é inicializado com valores todos a 0!
-	if ((dadosGerais = fopen("info_geral.txt", "r+")) == NULL) {
-		for (i = 0; i < 10; i++) {
-			tabelaGerais[i] = 0.0;
-		}
-
-		dadosGerais = fopen("info_geral.txt", "w+");
-		for (i = 0; i < 10; i++) {
-			fprintf(dadosGerais, "%f", tabelaGerais[i]);
-			fprintf(dadosGerais, "%s", " ");
-		}
-	}
-	else {
-		for (i = 0; i < 10; i++) {
-			fscanf(dadosGerais, "%f", &tabelaGerais[i]);
-		}
-	}
-	fclose(dadosGerais);
 
 	system("cls");
 	printf("Que valores deseja editar: \nOrcamento (1); \nNumero de horas de funcionamento (2); ");
@@ -684,13 +714,6 @@ void init(void) {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	gluOrtho2D(0, winw, 0, winh);
-	/*glutCreateMenu(myMenu);
-	glutAddMenuEntry("Poligono Regular", 2);
-	glutAddMenuEntry("Poligono Irregular", 3);
-	glutAddMenuEntry("Circulo", 1);
-	glutAddMenuEntry("Limpar Ecra", 4);
-	glutAddMenuEntry("Ajuda", 5);
-	glutAttachMenu(GLUT_RIGHT_BUTTON);*/
 
 	hide = 0;
 	drawMenu();
@@ -755,6 +778,13 @@ void MouseMotion(int x, int y) {
 
 void drawText(char *s, int x, int y) {
 	glColor3f(0, 0, 0);
+	glRasterPos2i(x, menuh - y);
+	for (int c = 0; c <= strlen(s); c++) {
+		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, s[c]);
+	}
+}
+
+void drawTextC(char *s, int x, int y) {
 	glRasterPos2i(x, menuh - y);
 	for (int c = 0; c <= strlen(s); c++) {
 		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, s[c]);
@@ -832,6 +862,303 @@ void display(void) {
 	glPopMatrix();
 	//Main view
 	glViewport(0, 0, winw, winh);
+	switch (active)
+	{
+	case 1://Dados Gerais
+		glColor3f(0.2, 0.2, 0.8);
+		drawTextC("Numero de alunos:", 350, 100);
+		sprintf(buff, "%d", (int)numAlunos);
+		drawText(buff, 510, 100);
+
+		glColor3f(0.2, 0.2, 0.8);
+		drawTextC("Numero de funcionarios:", 350, 150);
+		sprintf(buff, "%d", (int)numStaff);
+		drawText(buff, 550, 150);
+
+		glColor3f(0.2, 0.2, 0.8);
+		drawTextC("Horas de funcionamento:", 350, 200);
+		sprintf(buff, "%d h", (int)horasFuncionamento);
+		drawText(buff, 560, 200);
+
+		glColor3f(1, 1, 1);
+		glBegin(GL_POLYGON);
+		glVertex2i(800, 50);
+		glVertex2i(1100, 50);
+		glVertex2i(1100, 350);
+		glVertex2i(800, 350);
+		glEnd();
+		glBegin(GL_POLYGON);
+		glVertex2i(600, 100);
+		glVertex2i(800, 50);
+		glVertex2i(800, 250);
+		glVertex2i(600, 300);
+		glEnd();
+		glColor3f(0.9, 0, 0);
+		glBegin(GL_POLYGON);
+		glVertex2i(600, 300);
+		glVertex2i(800, 250);
+		glVertex2i(800, 295);
+		glVertex2i(675, 325);
+		glEnd();
+		glBegin(GL_POLYGON);
+		glVertex2i(800, 350);
+		glVertex2i(1100, 350);
+		glVertex2i(950, 500);
+		glEnd();
+		glColor3f(0.4, 0.4, 1);
+		glBegin(GL_POLYGON);
+		glVertex2i(650, 175);
+		glVertex2i(750, 150);
+		glVertex2i(750, 225);
+		glVertex2i(650, 250);
+		glEnd();
+		glBegin(GL_POLYGON);
+		glVertex2i(850, 250);
+		glVertex2i(1050, 250);
+		glVertex2i(1050, 300);
+		glVertex2i(850, 300);
+		glEnd();
+		glColor3f(0.6, 0.2, 0);
+		glBegin(GL_POLYGON);
+		glVertex2i(925, 50);
+		glVertex2i(975, 50);
+		glVertex2i(975, 125);
+		glVertex2i(925, 125);
+		glEnd();
+		break;
+	case 2://Consumos
+		max_luz = max_agua = max_gas = 0;
+		for (i = 0; i < 12; i++) {
+			luz[i] = cheiasMes[i] + vaziasMes[i] + pontaMes[i];
+			if (luz[i] > max_luz)
+				max_luz = luz[i];
+			if (gasMes[i] > max_gas)
+				max_gas = gasMes[i];
+			if (aguaMes[i] > max_agua)
+				max_agua = aguaMes[i];
+		}
+		/****************************************************/
+		/****************Gráfico de barras*******************/
+		/****************************************************/
+		glColor3f(0.8, 0.2, 0.2);
+		for (i = 0; i < 12; i++) {
+			glBegin(GL_POLYGON);
+			glVertex2f(colx + i * 40, coly);
+			glVertex2f(colx + i * 40 + 10, coly);
+			glVertex2f(colx + i * 40 + 10, coly + (luz[i] / max_luz) * 125);
+			glVertex2f(colx + i * 40, coly + (luz[i] / max_luz) * 125);
+			glEnd();
+		}
+		glColor3f(0.2, 0.8, 0.2);
+		for (i = 0; i < 12; i++) {
+			glBegin(GL_POLYGON);
+			glVertex2f(colx + 10 + i * 40, coly);
+			glVertex2f(colx + 10 + i * 40 + 10, coly);
+			glVertex2f(colx + 10 + i * 40 + 10, coly + (gasMes[i] / max_gas) * 125);
+			glVertex2f(colx + 10 + i * 40, coly + (gasMes[i] / max_gas) * 125);
+			glEnd();
+		}
+		glColor3f(0.2, 0.2, 0.8);
+		for (i = 0; i < 12; i++) {
+			glBegin(GL_POLYGON);
+			glVertex2f(colx + 20 + i * 40, coly);
+			glVertex2f(colx + 20 + i * 40 + 10, coly);
+			glVertex2f(colx + 20 + i * 40 + 10, coly + (aguaMes[i] / max_agua) * 125);
+			glVertex2f(colx + 20 + i * 40, coly + (aguaMes[i] / max_agua) * 125);
+			glEnd();
+		}
+		//legenda
+		glColor3f(0.8, 0.2, 0.2);
+		glBegin(GL_POLYGON);
+		glVertex2f(450, 50);
+		glVertex2f(460, 50);
+		glVertex2f(460, 60);
+		glVertex2f(450, 60);
+		glEnd();
+		drawText("Luz", 470, 550);
+
+		glColor3f(0.2, 0.8, 0.2);
+		glBegin(GL_POLYGON);
+		glVertex2f(530, 50);
+		glVertex2f(540, 50);
+		glVertex2f(540, 60);
+		glVertex2f(530, 60);
+		glEnd();
+		drawText("Gas", 550, 550);
+
+		glColor3f(0.2, 0.2, 0.8);
+		glBegin(GL_POLYGON);
+		glVertex2f(600, 50);
+		glVertex2f(610, 50);
+		glVertex2f(610, 60);
+		glVertex2f(600, 60);
+		glEnd();
+		drawText("Agua", 620, 550);
+
+		/****************************************************/
+		/*****************Gráfico circular*******************/
+		/****************************************************/
+		sumT = sumC = sumV = sumP = 0;
+		for (i = 0; i < 12; i++) {
+			sumT += cheiasMes[i] + vaziasMes[i] + pontaMes[i];
+			sumC += cheiasMes[i];
+			sumV += vaziasMes[i];
+			sumP += pontaMes[i];
+		}
+		ang1 = (sumC / sumT) * 2 * PI;
+		ang2 = (sumV / sumT) * 2 * PI;
+		ang3 = (sumP / sumT) * 2 * PI;
+
+		float n;
+		int x, y;
+
+		//CRIA_FATIA_VERMELHA
+		glBegin(GL_POLYGON);
+		glColor3f(1.0, 0.2, 0.2);
+		for (n = ang1 - 0.005; n <= ang1 + ang2; n += 0.005)
+		{
+			x = cos(n) * radius + centerx;
+			y = sin(n) * radius + centery;
+			glVertex2f(x, y);
+		}
+		glVertex2f(centerx, centery);
+		glEnd();
+		//FIM CRIA_FATIA_VERMELHA
+
+		//CRIA_FATIA_AZUL
+		glBegin(GL_POLYGON);
+		glColor3f(0.2, 0.2, 1);
+		for (n = -0.005; n <= ang1; n += 0.005)
+		{
+			x = cos(n) * radius + centerx;
+			y = sin(n) * radius + centery;
+			glVertex2f(x, y);
+		}
+		glVertex2f(centerx, centery);
+		glEnd();
+		//FIM CRIA_FATIA_AZUL
+
+		//CRIA_FATIA_VERDE
+		glBegin(GL_POLYGON);
+		glColor3f(0.2, 1, 0.2);
+
+		for (n = ang1 + ang2 - 0.005; n <= ang1 + ang2 + ang3; n += 0.005)
+		{
+			x = cos(n) * radius + centerx;
+			y = sin(n) * radius + centery;
+			glVertex2f(x, y);
+		}
+		glVertex2f(centerx, centery);
+		glEnd();
+		//FIM CRIA_FATIA_VERDE
+		//legenda
+		glColor3f(1.0, 0.2, 0.2);
+		glBegin(GL_POLYGON);
+		glVertex2f(950, 375);
+		glVertex2f(960, 375);
+		glVertex2f(960, 385);
+		glVertex2f(950, 385);
+		glEnd();
+		float per = (sumV / sumT) * 100;
+		sprintf(buff, "Horas Vazias: %d %c", (int)per, '%');
+		drawText(buff, 970, 225);
+		glColor3f(0.2, 0.2, 1);
+		glBegin(GL_POLYGON);
+		glVertex2f(950, 350);
+		glVertex2f(960, 350);
+		glVertex2f(960, 360);
+		glVertex2f(950, 360);
+		glEnd();
+		per = (sumC / sumT) * 100;
+		sprintf(buff, "Horas Cheias: %d %c", (int)per, '%');
+		drawText(buff, 970, 250);
+		glColor3f(0.2, 1, 0.2);
+		glBegin(GL_POLYGON);
+		glVertex2f(950, 325);
+		glVertex2f(960, 325);
+		glVertex2f(960, 335);
+		glVertex2f(950, 335);
+		glEnd();
+		per = (sumP / sumT) * 100;
+		sprintf(buff, "Horas Ponta: %d %c", (int)per, '%');
+		drawText(buff, 970, 275);
+		break;
+	case 3://Gastos
+		glColor3f(0.2, 0.2, 0.8);
+		drawTextC("Orcamento:", 400, 100);
+		sprintf(buff, "%d %c", (int)orcamentoAnual, '€');
+		drawText(buff, 500, 100);
+
+		glColor3f(0.2, 0.2, 0.8);
+		drawTextC("Ordenados:", 400, 150);
+		sprintf(buff, "%d %c", (int)totOrdenados, '€');
+		drawText(buff, 500, 150);
+
+		max_luz = max_agua = max_gas = 0;
+		for (i = 0; i < 12; i++) {
+			luz[i] = cheiasMes[i] + vaziasMes[i] + pontaMes[i];
+			if (luz[i] > max_luz)
+				max_luz = luz[i];
+			if (gasMes[i] > max_gas)
+				max_gas = gasMes[i];
+			if (aguaMes[i] > max_agua)
+				max_agua = aguaMes[i];
+		}
+		/****************************************************/
+		/****************Gráfico de linhas*******************/
+		/****************************************************/
+		glColor3f(0, 0, 0);
+		glLineWidth(2);
+		glPointSize(5);
+		glBegin(GL_LINE_STRIP);
+		glVertex2i(linex, liney);//origem do gráfico
+		glVertex2i(linex, liney + 150);
+		glVertex2i(linex, liney);
+		glVertex2i(linex + 470, liney);
+		glEnd();
+
+		//lines
+		glLineWidth(1);
+		glColor3f(0.8, 0.2, 0.2);
+		glBegin(GL_LINE_STRIP);
+		for (i = 0; i < 12; i++) {
+			glVertex2f(i * 42 + linex, (luz[i] / max_luz) * 125 + liney);
+		}
+		glEnd();
+		glColor3f(0.2, 0.8, 0.2);
+		glBegin(GL_LINE_STRIP);
+		for (i = 0; i < 12; i++) {
+			glVertex2f(i * 42 + linex, (gasMes[i] / max_gas) * 125 + liney);
+		}
+		glEnd();
+		glColor3f(0.2, 0.2, 0.8);
+		glBegin(GL_LINE_STRIP);
+		for (i = 0; i < 12; i++) {
+			glVertex2f(i * 42 + linex, (aguaMes[i] / max_agua) * 125 + liney);
+		}
+		glEnd();
+
+		//points
+		glColor3f(0, 0, 0);
+		glBegin(GL_POINTS);
+		for (i = 0; i < 12; i++) {
+			glVertex2f(i * 42 + linex, (luz[i] / max_luz) * 125 + liney);
+		}
+		glEnd();
+		glBegin(GL_POINTS);
+		for (i = 0; i < 12; i++) {
+			glVertex2f(i * 42 + linex, (gasMes[i] / max_gas) * 125 + liney);
+		}
+		glEnd();
+		glBegin(GL_POINTS);
+		for (i = 0; i < 12; i++) {
+			glVertex2f(i * 42 + linex, (aguaMes[i] / max_agua) * 125 + liney);
+		}
+		glEnd();
+		break;
+	default:
+		break;
+	}
 	// Desencadeia a geração da imagem (rendering)
 	glFlush();
 }
@@ -842,7 +1169,7 @@ void display(void) {
 
 int main(int argc, char** argv) {
 	//Lê ficheiros -  se não existir na diretoria o programa não arranca de todo.
-	leituraFicheiro("dados.txt");
+	leituraFicheiros();
 
 	// Inicializa o GLUT
 	glutInit(&argc, argv);
