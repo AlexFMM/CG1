@@ -36,14 +36,14 @@ int menuw = 300;
 int menuh = 600;
 
 //graph positions
-int linex = 400;
+int linex = 250;
 int liney = 300;
-int line2x = 400;
-int line2y = 225;
+int line2x = 500;
+int line2y = 200;
 int centerx = 1050;
 int centery = 500;
 int radius = 70;
-int colx = 400;
+int colx = 250;
 int coly = 100;
 
 float ang1, ang2, ang3;
@@ -98,6 +98,12 @@ float totHorasFuncionamento = 0.0;
 float gastosAgua = 0.0;
 float gastosGas = 0.0;
 float gastosElec = 0.0;
+float gastosAguaAluno = 0.0;
+float gastosGasAluno = 0.0;
+float gastosElecAluno = 0.0;
+float gastosAguaStaff = 0.0;
+float gastosGasStaff = 0.0;
+float gastosElecStaff = 0.0;
 float gastosCheio = 0.0;
 float gastosPonta = 0.0;
 float gastosVazio = 0.0;
@@ -678,6 +684,16 @@ void processamentoDados() {
 	gastosVazio = totVazias * custoEleticidadeVazio;
 	gastosElec = gastosCheio + gastosPonta + gastosVazio;
 
+	//aluno
+	gastosAguaAluno = gastosAgua * percentagemAlunos;
+	gastosGasAluno = gastosGas * percentagemAlunos;
+	gastosElecAluno = gastosElec * percentagemAlunos;
+
+	//staff
+	gastosAguaStaff = gastosAgua * percentagemStaff;
+	gastosGasStaff = gastosGas * percentagemStaff;
+	gastosElecStaff = gastosElec * percentagemStaff;
+
 	totalGastosAnuais = gastosAgua + gastosGas + gastosElec + totOrdenados;
 	balancoContas = orcamentoAnual - totalGastosAnuais;
 
@@ -788,6 +804,10 @@ void MouseMotion(int x, int y) {
 	glutPostRedisplay();
 }
 
+void reshape(int w, int h) {
+	glutReshapeWindow(winw, winh);
+}
+
 void drawText(char *s, int x, int y) {
 	glColor3f(0, 0, 0);
 	glRasterPos2i(x, menuh - y);
@@ -872,14 +892,6 @@ void drawMenu() {
 
 void display(void) {
 	glClear(GL_COLOR_BUFFER_BIT);
-	//Menu
-	glViewport(0, 0, winw, winh);
-	glColor3f(1, 1, 1);
-	menuButton();
-	glPushMatrix();
-	glTranslatef(menuw - 300, 0, 0);
-	drawMenu();
-	glPopMatrix();
 	//Main view
 	glViewport(0, 0, winw, winh);
 	switch (active)
@@ -1182,6 +1194,31 @@ void display(void) {
 		per = (sumP / sumT) * 100;
 		sprintf(buff, "Horas Ponta: %d %c", (int)per, '%');
 		drawText(buff, 970, 275);
+
+		//consumos detalhados
+		glColor3f(0.2, 0.2, 0.8);
+		drawTextC("Consumos:", 800, 400);
+		drawTextC("Aluno", 900, 400);
+		drawTextC("Funcionario", 1000, 400);
+
+		drawTextC("Gas", 800, 425);
+		drawTextC("Agua", 800, 450);
+		drawTextC("Eletricidade", 780, 475);
+
+		sprintf(buff, "%.2fkwh", consumoGasAluno);
+		drawText(buff, 900, 425);
+		sprintf(buff, "%.2fm3", consumoAguaAluno);
+		drawText(buff, 900, 450);
+		sprintf(buff, "%.2fkwh", consumoEletricidadeAluno);
+		drawText(buff, 900, 475);
+
+		sprintf(buff, "%.2fkwh", consumoGasStaff);
+		drawText(buff, 1000, 425);
+		sprintf(buff, "%.2fm3", consumoAguaStaff);
+		drawText(buff, 1000, 450);
+		sprintf(buff, "%.2fkwh", consumoEletricidadeStaff);
+		drawText(buff, 1000, 475);
+
 		break;
 	case 3://Gastos
 		glColor3f(0.2, 0.2, 0.8);
@@ -1202,25 +1239,34 @@ void display(void) {
 		glColor3f(0.2, 0.2, 0.8);
 		drawTextC("Gastos:", 800, 50);
 		drawTextC("Aluno", 900, 50);
-		drawTextC("Funcionario", 975, 50);
+		drawTextC("Funcionario", 1000, 50);
 
 		drawTextC("Gas", 800, 75);
 		drawTextC("Agua", 800, 100);
 		drawTextC("Eletricidade", 780, 125);
 
-		sprintf(buff, "%.2fe", consumoGasAluno);
+		sprintf(buff, "%.2fe", gastosGasAluno);
 		drawText(buff, 900, 75);
-		sprintf(buff, "%.2fe", consumoAguaAluno);
+		sprintf(buff, "%.2fe", gastosAguaAluno);
 		drawText(buff, 900, 100);
-		sprintf(buff, "%.2fe", consumoEletricidadeAluno);
+		sprintf(buff, "%.2fe", gastosElecAluno);
 		drawText(buff, 900, 125);
 
-		sprintf(buff, "%.2fe", consumoGasStaff);
-		drawText(buff, 975, 75);
-		sprintf(buff, "%.2fe", consumoAguaStaff);
-		drawText(buff, 975, 100);
-		sprintf(buff, "%.2fe", consumoEletricidadeStaff);
-		drawText(buff, 975, 125);
+		sprintf(buff, "%.2fe", gastosGasStaff);
+		drawText(buff, 1000, 75);
+		sprintf(buff, "%.2fe", gastosAguaStaff);
+		drawText(buff, 1000, 100);
+		sprintf(buff, "%.2fe", gastosElecStaff);
+		drawText(buff, 1000, 125);
+
+		glColor3f(0.2, 0.2, 0.8);
+		drawTextC("Total de gastos:", 500, 500);
+		sprintf(buff, "%.2fe", totalGastosAnuais);
+		drawText(buff, 650, 500);
+		glColor3f(0.2, 0.2, 0.8);
+		drawTextC("Balanco anual:", 500, 550);
+		sprintf(buff, "%.2fe", balancoContas);
+		drawText(buff, 625, 550);
 
 		/****************************************************/
 		/****************Gráfico de linhas 2*****************/
@@ -1244,7 +1290,7 @@ void display(void) {
 		glVertex2i(line2x + 470, line2y);
 		glEnd();
 
-		drawText("Gastos mensais", 400, 200);
+		drawText("Gastos mensais", 500, 225);
 
 		//lines
 		glLineWidth(1);
@@ -1303,6 +1349,14 @@ void display(void) {
 	default:
 		break;
 	}
+	//Menu
+	glViewport(0, 0, winw, winh);
+	glColor3f(1, 1, 1);
+	menuButton();
+	glPushMatrix();
+	glTranslatef(menuw - 300, 0, 0);
+	drawMenu();
+	glPopMatrix();
 	// Desencadeia a geração da imagem (rendering)
 	glFlush();
 }
@@ -1331,6 +1385,7 @@ int main(int argc, char** argv) {
 	glutKeyboardFunc(keyboardControl);
 	glutMouseFunc(MouseButton);
 	glutPassiveMotionFunc(MouseMotion);
+	glutReshapeFunc(reshape);
 	glutTimerFunc(0, menuAnim, 0);
 
 	//Lê ficheiros -  se não existir na diretoria o programa não arranca de todo.
