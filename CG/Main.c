@@ -96,6 +96,9 @@ float gastoGasMensal[12];
 float consumoDiarioAguaMensal[12]; //média mensal, para efeitos de simplificação
 float consumoDiarioGasMensal[12]; //média mensal, para efeitos de simplificação
 float consumoDiarioEletricidadeMensal[12]; //média mensal, para efeitos de simplificação
+float gastoDiarioEletricidadeMensal[12];
+float gastoDiarioAguaMensal[12];
+float gastoDiarioGasMensal[12];
 
 float aguaMes[12];
 float gasMes[12];
@@ -644,10 +647,17 @@ void processamentoDados() {
 	}
 
 	//diário (a partir de média mensal) -> assumir média de 30 dias por mês (365 dias / 12 meses ~= 30 dias)
-	for (int i = 0; i < 12; i++) {
+	for (i = 0; i < 12; i++) {
 		consumoDiarioAguaMensal[i] = aguaMes[i] / 30;
 		consumoDiarioGasMensal[i] = gasMes[i] / 30;
 		consumoDiarioEletricidadeMensal[i] = (cheiasMes[i] + pontaMes[i] + vaziasMes[i]) / 30;
+	}
+
+	//gasto diário
+	for (i = 0; i < 12; i++) {
+		gastoDiarioEletricidadeMensal[i] = gastoEletricidadeMensalTotal[i] / 30;
+		gastoDiarioAguaMensal[i] = gastoAguaMensal[i] / 30;
+		gastoDiarioGasMensal[i] = gastoGasMensal[i] / 30;
 	}
 }
 
