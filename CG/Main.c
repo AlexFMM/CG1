@@ -37,7 +37,9 @@ int menuh = 600;
 
 //graph positions
 int linex = 400;
-int liney = 100;
+int liney = 300;
+int line2x = 400;
+int line2y = 225;
 int centerx = 1050;
 int centery = 500;
 int radius = 70;
@@ -118,7 +120,7 @@ float cheiasMes[12];
 float pontaMes[12];
 float vaziasMes[12];
 float luz[12];
-float max_luz, max_agua, max_gas;
+float max_luz, max_agua, max_gas, max_gasto;
 float max_cheias, max_vazias, max_ponta;
 float sumT, sumC, sumV, sumP;
 
@@ -239,6 +241,8 @@ void leituraFicheiros() {
 void editaValores() { //edição de valores gerais, definidos pelo utilizador
 	int opcao;
 	char repetir;
+
+	ShowWindow(GetConsoleWindow(), SW_RESTORE);
 
 	system("cls");
 	printf("Que valores deseja editar: \nOrcamento (1); \nNumero de horas de funcionamento (2); ");
@@ -456,6 +460,8 @@ void editaValores() { //edição de valores gerais, definidos pelo utilizador
 		break;
 	}
 
+	ShowWindow(GetConsoleWindow(), SW_HIDE);
+
 	//atualização do ficheiro
 	dadosGerais = fopen("info_geral.txt", "w+");
 	for (i = 0; i < 10; i++) {
@@ -486,6 +492,8 @@ void editaDados() {
 	}
 	fclose(entrada);
 
+	ShowWindow(GetConsoleWindow(), SW_RESTORE);
+
 	system("cls");
 	printf("Em que mes (em valor numerico) pretende alterar dados: ");
 	scanf("%d", &m);
@@ -515,6 +523,8 @@ void editaDados() {
 		tabelaDados[m - 1][0] = novoAguaMes;
 		printf("Valor atualizado com sucesso! Deseja repetir? (s/n)");
 		scanf(" %c", &repetir);
+		
+		aguaMes[m - 1] = novoAguaMes;
 
 		if (repetir == 's' || repetir == 'S') {
 			editaDados();
@@ -523,7 +533,6 @@ void editaDados() {
 			break;
 		}
 
-		aguaMes[m - 1] = novoAguaMes;
 		break;
 	case 2:
 		printf("Valor atual = %f \nNovo: ", tabelaDados[m - 1][1]);
@@ -538,6 +547,8 @@ void editaDados() {
 		printf("Valor atualizado com sucesso! Deseja repetir? (s/n)");
 		scanf(" %c", &repetir);
 
+		gasMes[m - 1] = novoGasMes;
+
 		if (repetir == 's' || repetir == 'S') {
 			editaDados();
 		}
@@ -545,7 +556,6 @@ void editaDados() {
 			break;
 		}
 
-		gasMes[m - 1] = novoGasMes;
 		break;
 	case 3:
 		printf("Valor atual = %f \nNovo: ", tabelaDados[m - 1][2]);
@@ -559,6 +569,7 @@ void editaDados() {
 		tabelaDados[m - 1][3] = novoCheiaMes;
 		printf("Valor atualizado com sucesso! Deseja repetir? (s/n)");
 		scanf(" %c", &repetir);
+		cheiasMes[m - 1] = novoCheiaMes;
 
 		if (repetir == 's' || repetir == 'S') {
 			editaDados();
@@ -567,7 +578,6 @@ void editaDados() {
 			break;
 		}
 
-		cheiasMes[m - 1] = novoCheiaMes;
 		break;
 	case 4:
 		printf("Valor atual = %f \nNovo: ", tabelaDados[m - 1][3]);
@@ -581,6 +591,7 @@ void editaDados() {
 		tabelaDados[m - 1][3] = novoPontaMes;
 		printf("Valor atualizado com sucesso! Deseja repetir? (s/n)");
 		scanf(" %c", &repetir);
+		pontaMes[m - 1] = novoPontaMes;
 
 		if (repetir == 's' || repetir == 'S') {
 			editaDados();
@@ -589,7 +600,6 @@ void editaDados() {
 			break;
 		}
 
-		pontaMes[m - 1] = novoPontaMes;
 		break;
 	case 5:
 		printf("Valor atual = %f \nNovo: ", tabelaDados[m - 1][4]);
@@ -603,6 +613,7 @@ void editaDados() {
 		tabelaDados[m - 1][4] = novoVazioMes;
 		printf("Valor atualizado com sucesso! Deseja repetir? (s/n)");
 		scanf(" %c", &repetir);
+		vaziasMes[m - 1] = novoVazioMes;
 
 		if (repetir == 's' || repetir == 'S') {
 			editaDados();
@@ -610,11 +621,12 @@ void editaDados() {
 		else if (repetir == 'n' || repetir == 'N') {
 			break;
 		}
-		vaziasMes[m - 1] = novoVazioMes;
 		break;
 	case 6:
 		break;
 	}
+
+	ShowWindow(GetConsoleWindow(), SW_HIDE);
 
 	//atualização do ficheiro
 	saida = fopen("dados.txt", "w");
@@ -784,6 +796,14 @@ void drawText(char *s, int x, int y) {
 	}
 }
 
+void drawTextS(char *s, int x, int y) {
+	glColor3f(0, 0, 0);
+	glRasterPos2i(x, menuh - y);
+	for (int c = 0; c <= strlen(s); c++) {
+		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_10, s[c]);
+	}
+}
+
 void drawTextC(char *s, int x, int y) {
 	glRasterPos2i(x, menuh - y);
 	for (int c = 0; c <= strlen(s); c++) {
@@ -876,10 +896,11 @@ void display(void) {
 		drawText(buff, 550, 150);
 
 		glColor3f(0.2, 0.2, 0.8);
-		drawTextC("Horas de funcionamento:", 350, 200);
+		drawTextC("Horas de funcionamento diarias:", 350, 200);
 		sprintf(buff, "%d h", (int)horasFuncionamento);
-		drawText(buff, 560, 200);
+		drawText(buff, 620, 200);
 
+		//logo escola
 		glColor3f(1, 1, 1);
 		glBegin(GL_POLYGON);
 		glVertex2i(800, 50);
@@ -996,6 +1017,85 @@ void display(void) {
 		drawText("Agua", 620, 550);
 
 		/****************************************************/
+		/****************Gráfico de linhas 1*****************/
+		/****************************************************/
+		max_luz = max_agua = max_gas = 0;
+		for (i = 0; i < 12; i++) {
+			if (consumoDiarioEletricidadeMensal[i] > max_luz)
+				max_luz = consumoDiarioEletricidadeMensal[i];
+			if (consumoDiarioGasMensal[i] > max_gas)
+				max_gas = consumoDiarioGasMensal[i];
+			if (consumoDiarioAguaMensal[i] > max_agua)
+				max_agua = consumoDiarioAguaMensal[i];
+		}
+
+		glColor3f(0, 0, 0);
+		glLineWidth(2);
+		glPointSize(5);
+		glBegin(GL_LINE_STRIP);
+		glVertex2i(linex, liney);//origem do gráfico
+		glVertex2i(linex, liney + 150);
+		glVertex2i(linex, liney);
+		glVertex2i(linex + 470, liney);
+		glEnd();
+
+		drawText("Media de consumo diario", 400, 100);
+
+		//lines
+		glLineWidth(1);
+		glColor3f(0.8, 0.2, 0.2);
+		glBegin(GL_LINE_STRIP);
+		for (i = 0; i < 12; i++) {
+			glVertex2f(i * 42 + linex, (consumoDiarioEletricidadeMensal[i] / max_luz) * 125 + liney);
+		}
+		glEnd();
+		glColor3f(0.2, 0.8, 0.2);
+		glBegin(GL_LINE_STRIP);
+		for (i = 0; i < 12; i++) {
+			glVertex2f(i * 42 + linex, (consumoDiarioGasMensal[i] / max_gas) * 125 + liney);
+		}
+		glEnd();
+		glColor3f(0.2, 0.2, 0.8);
+		glBegin(GL_LINE_STRIP);
+		for (i = 0; i < 12; i++) {
+			glVertex2f(i * 42 + linex, (consumoDiarioAguaMensal[i] / max_agua) * 125 + liney);
+		}
+		glEnd();
+
+		//points
+		glColor3f(0, 0, 0);
+		glBegin(GL_POINTS);
+		for (i = 0; i < 12; i++) {
+			glVertex2f(i * 42 + linex, (consumoDiarioEletricidadeMensal[i] / max_luz) * 125 + liney);
+		}
+		glEnd();
+		glBegin(GL_POINTS);
+		for (i = 0; i < 12; i++) {
+			glVertex2f(i * 42 + linex, (consumoDiarioGasMensal[i] / max_gas) * 125 + liney);
+		}
+		glEnd();
+		glBegin(GL_POINTS);
+		for (i = 0; i < 12; i++) {
+			glVertex2f(i * 42 + linex, (consumoDiarioAguaMensal[i] / max_agua) * 125 + liney);
+		}
+		glEnd();
+
+		//labels
+		drawTextS("Eletricidade", linex - 58, 600 - (consumoDiarioEletricidadeMensal[0] / max_luz * 125 + liney));
+		drawTextS("Gas", linex - 21, 600 - (consumoDiarioGasMensal[0] / max_gas * 125 + liney));
+		drawTextS("Agua", linex - 30, 600 - (consumoDiarioAguaMensal[0] / max_agua * 125 + liney));
+		for (i = 0; i < 12; i++) {
+			sprintf(buff, "%.1fkWh", consumoDiarioEletricidadeMensal[i]);
+			drawTextS(buff, i * 42 + linex + 5, 600 - (consumoDiarioEletricidadeMensal[i] / max_luz * 125 + liney));
+
+			sprintf(buff, "%.1fkWh", consumoDiarioGasMensal[i]);
+			drawTextS(buff, i * 42 + linex + 5, 600 - (consumoDiarioGasMensal[i] / max_gas * 125 + liney));
+
+			sprintf(buff, "%.1fm3", consumoDiarioAguaMensal[i]);
+			drawTextS(buff, i * 42 + linex + 5, 600 - (consumoDiarioAguaMensal[i] / max_agua * 125 + liney));
+		}
+
+		/****************************************************/
 		/*****************Gráfico circular*******************/
 		/****************************************************/
 		sumT = sumC = sumV = sumP = 0;
@@ -1085,56 +1185,85 @@ void display(void) {
 		break;
 	case 3://Gastos
 		glColor3f(0.2, 0.2, 0.8);
-		drawTextC("Orcamento:", 400, 100);
-		sprintf(buff, "%d %c", (int)orcamentoAnual, '€');
+		drawTextC("Orcamento:", 400, 50);
+		sprintf(buff, "%d e", (int)orcamentoAnual);
+		drawText(buff, 500, 50);
+
+		glColor3f(0.2, 0.2, 0.8);
+		drawTextC("Ordenados:", 400, 100);
+		sprintf(buff, "%d e", (int)totOrdenados);
 		drawText(buff, 500, 100);
 
 		glColor3f(0.2, 0.2, 0.8);
-		drawTextC("Ordenados:", 400, 150);
-		sprintf(buff, "%d %c", (int)totOrdenados, '€');
-		drawText(buff, 500, 150);
+		drawTextC("Ordenado medio:", 400, 150);
+		sprintf(buff, "%d e", (int)ordenadoMedio);
+		drawText(buff, 550, 150);
 
-		max_luz = max_agua = max_gas = 0;
+		glColor3f(0.2, 0.2, 0.8);
+		drawTextC("Gastos:", 800, 50);
+		drawTextC("Aluno", 900, 50);
+		drawTextC("Funcionario", 975, 50);
+
+		drawTextC("Gas", 800, 75);
+		drawTextC("Agua", 800, 100);
+		drawTextC("Eletricidade", 780, 125);
+
+		sprintf(buff, "%.2fe", consumoGasAluno);
+		drawText(buff, 900, 75);
+		sprintf(buff, "%.2fe", consumoAguaAluno);
+		drawText(buff, 900, 100);
+		sprintf(buff, "%.2fe", consumoEletricidadeAluno);
+		drawText(buff, 900, 125);
+
+		sprintf(buff, "%.2fe", consumoGasStaff);
+		drawText(buff, 975, 75);
+		sprintf(buff, "%.2fe", consumoAguaStaff);
+		drawText(buff, 975, 100);
+		sprintf(buff, "%.2fe", consumoEletricidadeStaff);
+		drawText(buff, 975, 125);
+
+		/****************************************************/
+		/****************Gráfico de linhas 2*****************/
+		/****************************************************/
+		max_gasto = 0;
 		for (i = 0; i < 12; i++) {
-			luz[i] = cheiasMes[i] + vaziasMes[i] + pontaMes[i];
-			if (luz[i] > max_luz)
-				max_luz = luz[i];
-			if (gasMes[i] > max_gas)
-				max_gas = gasMes[i];
-			if (aguaMes[i] > max_agua)
-				max_agua = aguaMes[i];
+			if (gastoEletricidadeMensalTotal[i] > max_gasto)
+				max_gasto = gastoEletricidadeMensalTotal[i];
+			if (gastoGasMensal[i] > max_gasto)
+				max_gasto = gastoGasMensal[i];
+			if (gastoAguaMensal[i] > max_gasto)
+				max_gasto = gastoAguaMensal[i];
 		}
-		/****************************************************/
-		/****************Gráfico de linhas*******************/
-		/****************************************************/
 		glColor3f(0, 0, 0);
 		glLineWidth(2);
 		glPointSize(5);
 		glBegin(GL_LINE_STRIP);
-		glVertex2i(linex, liney);//origem do gráfico
-		glVertex2i(linex, liney + 150);
-		glVertex2i(linex, liney);
-		glVertex2i(linex + 470, liney);
+		glVertex2i(line2x, line2y);//origem do gráfico
+		glVertex2i(line2x, line2y + 150);
+		glVertex2i(line2x, line2y);
+		glVertex2i(line2x + 470, line2y);
 		glEnd();
+
+		drawText("Gastos mensais", 400, 200);
 
 		//lines
 		glLineWidth(1);
 		glColor3f(0.8, 0.2, 0.2);
 		glBegin(GL_LINE_STRIP);
 		for (i = 0; i < 12; i++) {
-			glVertex2f(i * 42 + linex, (luz[i] / max_luz) * 125 + liney);
+			glVertex2f(i * 42 + line2x, (gastoEletricidadeMensalTotal[i] / max_gasto) * 125 + line2y);
 		}
 		glEnd();
 		glColor3f(0.2, 0.8, 0.2);
 		glBegin(GL_LINE_STRIP);
 		for (i = 0; i < 12; i++) {
-			glVertex2f(i * 42 + linex, (gasMes[i] / max_gas) * 125 + liney);
+			glVertex2f(i * 42 + line2x, (gastoGasMensal[i] / max_gasto) * 125 + line2y);
 		}
 		glEnd();
 		glColor3f(0.2, 0.2, 0.8);
 		glBegin(GL_LINE_STRIP);
 		for (i = 0; i < 12; i++) {
-			glVertex2f(i * 42 + linex, (aguaMes[i] / max_agua) * 125 + liney);
+			glVertex2f(i * 42 + line2x, (gastoAguaMensal[i] / max_gasto) * 125 + line2y);
 		}
 		glEnd();
 
@@ -1142,19 +1271,34 @@ void display(void) {
 		glColor3f(0, 0, 0);
 		glBegin(GL_POINTS);
 		for (i = 0; i < 12; i++) {
-			glVertex2f(i * 42 + linex, (luz[i] / max_luz) * 125 + liney);
+			glVertex2f(i * 42 + line2x, (gastoEletricidadeMensalTotal[i] / max_gasto) * 125 + line2y);
 		}
 		glEnd();
 		glBegin(GL_POINTS);
 		for (i = 0; i < 12; i++) {
-			glVertex2f(i * 42 + linex, (gasMes[i] / max_gas) * 125 + liney);
+			glVertex2f(i * 42 + line2x, (gastoGasMensal[i] / max_gasto) * 125 + line2y);
 		}
 		glEnd();
 		glBegin(GL_POINTS);
 		for (i = 0; i < 12; i++) {
-			glVertex2f(i * 42 + linex, (aguaMes[i] / max_agua) * 125 + liney);
+			glVertex2f(i * 42 + line2x, (gastoAguaMensal[i] / max_gasto) * 125 + line2y);
 		}
 		glEnd();
+
+		//labels
+		drawTextS("Eletricidade", line2x - 58, 600 - (gastoEletricidadeMensalTotal[0] / max_gasto * 125 + line2y));
+		drawTextS("Gas", line2x - 21, 600 - (gastoGasMensal[0] / max_gasto * 125 + line2y));
+		drawTextS("Agua", line2x - 30, 600 - (gastoAguaMensal[0] / max_gasto * 125 + line2y));
+		for (i = 0; i < 12; i++) {
+			sprintf(buff, "%.1fe", gastoEletricidadeMensalTotal[i]);
+			drawTextS(buff, i * 42 + line2x + 5, 600 - (gastoEletricidadeMensalTotal[i] / max_gasto * 125 + line2y));
+
+			sprintf(buff, "%.1fe", gastoGasMensal[i]);
+			drawTextS(buff, i * 42 + line2x + 5, 600 - (gastoGasMensal[i] / max_gasto * 125 + line2y));
+
+			sprintf(buff, "%.1fe", gastoAguaMensal[i]);
+			drawTextS(buff, i * 42 + line2x + 5, 600 - (gastoAguaMensal[i] / max_gasto * 125 + line2y));
+		}
 		break;
 	default:
 		break;
@@ -1168,14 +1312,11 @@ void display(void) {
 ////////////////////////////////////////////////////////////////////////////////
 
 int main(int argc, char** argv) {
-	//Lê ficheiros -  se não existir na diretoria o programa não arranca de todo.
-	leituraFicheiros();
 
 	// Inicializa o GLUT
 	glutInit(&argc, argv);
 
-	//#pragma
-	//FreeConsole();
+	ShowWindow(GetConsoleWindow(), SW_HIDE);
 
 	glutInitWindowSize(winw, winh);
 	glutInitWindowPosition(100, 100);
@@ -1191,6 +1332,9 @@ int main(int argc, char** argv) {
 	glutMouseFunc(MouseButton);
 	glutPassiveMotionFunc(MouseMotion);
 	glutTimerFunc(0, menuAnim, 0);
+
+	//Lê ficheiros -  se não existir na diretoria o programa não arranca de todo.
+	leituraFicheiros();
 
 	//menu com tecla direita do rato para efetuar edições de dados 
 	int menu_id = glutCreateMenu(menuEdicao);
