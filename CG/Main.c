@@ -17,8 +17,8 @@
 #include <windows.h>
 #include <time.h>
 #include <math.h>
-#include <GL/glut.h>
-#include <GL/glu.h>
+#include <glut.h>
+#include <glu.h>
 //
 //	Definições /////////////////////////////////////////////////////////////////
 //
