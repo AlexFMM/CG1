@@ -49,7 +49,7 @@ float ang1, ang2, ang3;
 GLboolean hide;
 
 int hover=0;
-int active=2;
+int active=1;
 int button[3][2] = { {75,110}, {125,160}, {175,210} };
 
 FILE *dados;
@@ -96,13 +96,15 @@ float sumT, sumC, sumV, sumP;
 //contadores para funções
 int i, j;
 
+char buff[50];
+
 //
 //	Funções ////////////////////////////////////////////////////////////////////
 //
 
 //	Leitura e processamento do ficheiro de dados ///////////////////////////////
-void leituraFicheiro(char *file) {
-	if ((dados = fopen(file, "r+")) == NULL) {
+void leituraFicheiros() {
+	if ((dados = fopen("dados.txt", "r+")) == NULL) {
 		printf("Erro: ficheiro inexistente na diretoria!\nPrima <ENTER> para sair.");
 		getchar();
 		exit(0);
@@ -120,6 +122,38 @@ void leituraFicheiro(char *file) {
 
 		fclose(logFile);
 	}
+
+	//obtenção dos dados gerais da escola
+	//os valores serão armazendados num ficheiro para o propósito, caso não exista
+	//é inicializado com valores todos a 0!
+	if ((dadosGerais = fopen("info_geral.txt", "r+")) == NULL) {
+		for (i = 0; i < 10; i++) {
+			tabelaGerais[i] = 0.0;
+		}
+
+		dadosGerais = fopen("info_geral.txt", "w+");
+		for (i = 0; i < 10; i++) {
+			fprintf(dadosGerais, "%f", tabelaGerais[i]);
+			fprintf(dadosGerais, "%s", " ");
+		}
+	}
+	else {
+		for (i = 0; i < 10; i++) {
+			fscanf(dadosGerais, "%f", &tabelaGerais[i]);
+		}
+	}
+	fclose(dadosGerais);
+
+	orcamentoMensal = tabelaGerais[0];
+	horasFuncionamento = tabelaGerais[1];
+	custoAgua = tabelaGerais[2];
+	custoGas = tabelaGerais[3];
+	custoEleticidadeCheio = tabelaGerais[4];
+	custoEleticidadePonta = tabelaGerais[5];
+	custoEleticidadeVazio = tabelaGerais[6];
+	numAlunos = tabelaGerais[7];
+	numStaff = tabelaGerais[8];
+	totOrdenados = tabelaGerais[9];
 
 	//obtenção do total de gastos e vetores com os dados (para gráficos)
 	for (i = 0; i < 12; i++) {
@@ -163,26 +197,6 @@ void editaValores() { //edição de valores gerais, definidos pelo utilizador
 
 	ShowWindow(GetConsoleWindow(), SW_RESTORE);
 	
-	//os valores serão armazendados num ficheiro para o propósito, caso não exista
-	//é inicializado com valores todos a 0!
-	if ((dadosGerais = fopen("info_geral.txt", "r+")) == NULL) {
-		for (i = 0; i < 10; i++) {
-			tabelaGerais[i] = 0.0;
-		}
-
-		dadosGerais = fopen("info_geral.txt", "w+");
-		for (i = 0; i < 10; i++) {
-			fprintf(dadosGerais, "%f", tabelaGerais[i]);
-			fprintf(dadosGerais, "%s", " ");
-		}
-	}
-	else {
-		for (i = 0; i < 10; i++) {
-			fscanf(dadosGerais, "%f", &tabelaGerais[i]);
-		}
-	}
-	fclose(dadosGerais);
-
 	system("cls");
 	printf("Que valores deseja editar: \nOrcamento (1); \nNumero de horas de funcionamento (2); ");
 	printf("\nCusto da Agua/m3 (3); \nCusto do Gas/m3 (4)");
@@ -597,13 +611,6 @@ void init(void) {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	gluOrtho2D(0, winw, 0, winh);
-	/*glutCreateMenu(myMenu);
-	glutAddMenuEntry("Poligono Regular", 2);
-	glutAddMenuEntry("Poligono Irregular", 3);
-	glutAddMenuEntry("Circulo", 1);
-	glutAddMenuEntry("Limpar Ecra", 4);
-	glutAddMenuEntry("Ajuda", 5);
-	glutAttachMenu(GLUT_RIGHT_BUTTON);*/
 
 	hide = 0;
 	drawMenu();
@@ -668,6 +675,13 @@ void MouseMotion(int x, int y) {
 
 void drawText(char *s, int x, int y) {
 	glColor3f(0, 0, 0);
+	glRasterPos2i(x, menuh - y);
+	for (int c = 0; c <= strlen(s); c++) {
+		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, s[c]);
+	}
+}
+
+void drawTextC(char *s, int x, int y) {
 	glRasterPos2i(x, menuh - y);
 	for (int c = 0; c <= strlen(s); c++) {
 		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, s[c]);
@@ -748,8 +762,67 @@ void display(void){
 	glViewport(0, 0, winw, winh);
 	switch (active)
 	{
-	case 1://Dados Gerail
+	case 1://Dados Gerais
+		glColor3f(0.2, 0.2, 0.8);
+		drawTextC("Numero de alunos:", 350, 100);
+		sprintf(buff, "%d", (int)numAlunos);
+		drawText(buff, 510, 100);
 
+		glColor3f(0.2, 0.2, 0.8);
+		drawTextC("Numero de funcionarios:", 350, 150);
+		sprintf(buff, "%d", (int)numStaff);
+		drawText(buff, 550, 150);
+
+		glColor3f(0.2, 0.2, 0.8);
+		drawTextC("Horas de funcionamento:", 350, 200);
+		sprintf(buff, "%d h", (int)horasFuncionamento);
+		drawText(buff, 560, 200);
+
+		glColor3f(1, 1, 1);
+		glBegin(GL_POLYGON);
+		glVertex2i(800, 50);
+		glVertex2i(1100, 50);
+		glVertex2i(1100, 350);
+		glVertex2i(800, 350);
+		glEnd();
+		glBegin(GL_POLYGON);
+		glVertex2i(600, 100);
+		glVertex2i(800, 50);
+		glVertex2i(800, 250);
+		glVertex2i(600, 300);
+		glEnd();
+		glColor3f(0.9, 0, 0);
+		glBegin(GL_POLYGON);
+		glVertex2i(600, 300);
+		glVertex2i(800, 250);
+		glVertex2i(800, 295);
+		glVertex2i(675, 325);
+		glEnd();
+		glBegin(GL_POLYGON);
+		glVertex2i(800, 350);
+		glVertex2i(1100, 350);
+		glVertex2i(950, 500);
+		glEnd();
+		glColor3f(0.4, 0.4, 1);
+		glBegin(GL_POLYGON);
+		glVertex2i(650, 175);
+		glVertex2i(750, 150);
+		glVertex2i(750, 225);
+		glVertex2i(650, 250);
+		glEnd();
+		glBegin(GL_POLYGON);
+		glVertex2i(850, 250);
+		glVertex2i(1050, 250);
+		glVertex2i(1050, 300);
+		glVertex2i(850, 300);
+		glEnd();
+		glColor3f(0.6, 0.2, 0);
+		glBegin(GL_POLYGON);
+		glVertex2i(925, 50);
+		glVertex2i(975, 50);
+		glVertex2i(975, 125);
+		glVertex2i(925, 125);
+		glEnd();
 		break;
 	case 2://Consumos
 		glColor3f(0,0,0);
@@ -891,8 +964,7 @@ void display(void){
 			y = sin(n) * radius + centery;
 			glVertex2f(x, y);
 		}
-		glVertex2f(centerx, centery); //para fazer um poligono, é necessário que o último
-							  //vertice esteja conectado com a origem
+		glVertex2f(centerx, centery);
 		glEnd();
 		//FIM CRIA_FATIA_VERMELHA
 
@@ -905,8 +977,7 @@ void display(void){
 			y = sin(n) * radius + centery;
 			glVertex2f(x, y);
 		}
-		glVertex2f(centerx, centery); //para fazer um poligono, é necessário que o último
-									  //vertice esteja conectado com a origem
+		glVertex2f(centerx, centery);
 		glEnd();
 		//FIM CRIA_FATIA_AZUL
 
@@ -920,35 +991,40 @@ void display(void){
 			y = sin(n) * radius + centery;
 			glVertex2f(x, y);
 		}
-		glVertex2f(centerx, centery); //para fazer um poligono, é necessário que o último
-							  //vertice esteja conectado com a origem
+		glVertex2f(centerx, centery);
 		glEnd();
 		//FIM CRIA_FATIA_VERDE
 		//legenda
 		glColor3f(1.0, 0.2, 0.2);
 		glBegin(GL_POLYGON);
-		glVertex2f(1050, 375);
-		glVertex2f(1060, 375);
-		glVertex2f(1060, 385);
-		glVertex2f(1050, 385);
+		glVertex2f(950, 375);
+		glVertex2f(960, 375);
+		glVertex2f(960, 385);
+		glVertex2f(950, 385);
 		glEnd();
-		drawText("Horas Vazias", 1070, 225);
+		float per = (sumV / sumT) * 100;
+		sprintf(buff, "Horas Vazias: %d %c", (int)per, '%');
+		drawText(buff, 970, 225);
 		glColor3f(0.2, 0.2, 1);
 		glBegin(GL_POLYGON);
-		glVertex2f(1050, 350);
-		glVertex2f(1060, 350);
-		glVertex2f(1060, 360);
-		glVertex2f(1050, 360);
+		glVertex2f(950, 350);
+		glVertex2f(960, 350);
+		glVertex2f(960, 360);
+		glVertex2f(950, 360);
 		glEnd();
-		drawText("Horas Cheias", 1070, 250);
+		per = (sumC / sumT) * 100;
+		sprintf(buff, "Horas Cheias: %d %c", (int)per, '%');
+		drawText(buff, 970, 250);
 		glColor3f(0.2, 1, 0.2);
 		glBegin(GL_POLYGON);
-		glVertex2f(1050, 325);
-		glVertex2f(1060, 325);
-		glVertex2f(1060, 335);
-		glVertex2f(1050, 335);
+		glVertex2f(950, 325);
+		glVertex2f(960, 325);
+		glVertex2f(960, 335);
+		glVertex2f(950, 335);
 		glEnd();
-		drawText("Horas Ponta", 1070, 275);
+		per = (sumP / sumT) * 100;
+		sprintf(buff, "Horas Ponta: %d %c", (int)per, '%');
+		drawText(buff, 970, 275);
 		break;
 	case 3://Gastos
 
@@ -966,7 +1042,7 @@ void display(void){
 
 int main(int argc, char** argv){
 	//Lê ficheiros -  se não existir na diretoria o programa não arranca de todo.
-	leituraFicheiro("dados.txt");
+	leituraFicheiros();
 
 	// Inicializa o GLUT
 	glutInit(&argc, argv);
