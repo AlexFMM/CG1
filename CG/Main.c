@@ -37,7 +37,7 @@ int menuh = 600;
 
 //graph positions
 int linex = 400;
-int liney = 400;
+int liney = 100;
 int centerx = 1050;
 int centery = 500;
 int radius = 70;
@@ -49,7 +49,7 @@ float ang1, ang2, ang3;
 GLboolean hide;
 
 int hover=0;
-int active=1;
+int active=3;
 int button[3][2] = { {75,110}, {125,160}, {175,210} };
 
 FILE *dados;
@@ -825,18 +825,6 @@ void display(void){
 		glEnd();
 		break;
 	case 2://Consumos
-		glColor3f(0,0,0);
-		glLineWidth(2);
-		glPointSize(5);
-		/****************************************************/
-		/****************Gráfico de linhas*******************/
-		/****************************************************/
-		glBegin(GL_LINE_STRIP);
-		glVertex2i(linex,liney);//origem do gráfico
-		glVertex2i(linex,liney+150);
-		glVertex2i(linex,liney);
-		glVertex2i(linex+470,liney);
-		glEnd();
 		max_luz = max_agua = max_gas = 0;
 		for (i = 0; i < 12; i++) {
 			luz[i] = cheiasMes[i] + vaziasMes[i] + pontaMes[i];
@@ -847,43 +835,10 @@ void display(void){
 			if (aguaMes[i] > max_agua)
 				max_agua = aguaMes[i];
 		}
-		//lines
-		glBegin(GL_LINE_STRIP);
-		for (i = 0; i < 12; i++) {
-			glVertex2f(i * 42 + linex, (luz[i] / max_luz) * 125 + liney);
-		}
-		glEnd();
-		glBegin(GL_LINE_STRIP);
-		for (i = 0; i < 12; i++) {
-			glVertex2f(i * 42 + linex, (gasMes[i] / max_gas) * 125 + liney);
-		}
-		glEnd();
-		glBegin(GL_LINE_STRIP);
-		for (i = 0; i < 12; i++) {
-			glVertex2f(i * 42 + linex, (aguaMes[i] / max_agua) * 125 + liney);
-		}
-		glEnd();
-		
-		//points
-		glBegin(GL_POINTS);
-		for (i = 0; i < 12; i++) {
-			glVertex2f(i * 42 + linex, (luz[i] / max_luz) * 125 + liney);
-		}
-		glEnd();
-		glBegin(GL_POINTS);
-		for (i = 0; i < 12; i++) {
-			glVertex2f(i * 42 + linex, (gasMes[i] / max_gas) * 125 + liney);
-		}
-		glEnd();
-		glBegin(GL_POINTS);
-		for (i = 0; i < 12; i++) {
-			glVertex2f(i * 42 + linex, (aguaMes[i] / max_agua) * 125 + liney);
-		}
-		glEnd();
 		/****************************************************/
 		/****************Gráfico de barras*******************/
 		/****************************************************/
-		glColor3f(1, 0, 0);
+		glColor3f(0.8, 0.2, 0.2);
 		for (i = 0; i < 12; i++) {
 			glBegin(GL_POLYGON);
 			glVertex2f(colx + i * 40, coly);
@@ -892,7 +847,7 @@ void display(void){
 			glVertex2f(colx + i * 40, coly + (luz[i] / max_luz) * 125);
 			glEnd();
 		}
-		glColor3f(0, 1, 0);
+		glColor3f(0.2, 0.8, 0.2);
 		for (i = 0; i < 12; i++) {
 			glBegin(GL_POLYGON);
 			glVertex2f(colx + 10 + i * 40, coly);
@@ -901,7 +856,7 @@ void display(void){
 			glVertex2f(colx + 10 + i * 40, coly + (gasMes[i] / max_gas) * 125);
 			glEnd();
 		}
-		glColor3f(0,0,1);
+		glColor3f(0.2, 0.2, 0.8);
 		for (i = 0; i < 12; i++) {
 			glBegin(GL_POLYGON);
 			glVertex2f(colx + 20 + i * 40, coly);
@@ -911,7 +866,7 @@ void display(void){
 			glEnd();
 		}
 		//legenda
-		glColor3f(1, 0, 0);
+		glColor3f(0.8, 0.2, 0.2);
 		glBegin(GL_POLYGON);
 		glVertex2f(450, 50);
 		glVertex2f(460, 50);
@@ -920,7 +875,7 @@ void display(void){
 		glEnd();
 		drawText("Luz", 470, 550);
 
-		glColor3f(0, 1, 0);
+		glColor3f(0.2, 0.8, 0.2);
 		glBegin(GL_POLYGON);
 		glVertex2f(530, 50);
 		glVertex2f(540, 50);
@@ -929,7 +884,7 @@ void display(void){
 		glEnd();
 		drawText("Gas", 550, 550);
 
-		glColor3f(0, 0, 1);
+		glColor3f(0.2, 0.2, 0.8);
 		glBegin(GL_POLYGON);
 		glVertex2f(600, 50);
 		glVertex2f(610, 50);
@@ -1027,7 +982,77 @@ void display(void){
 		drawText(buff, 970, 275);
 		break;
 	case 3://Gastos
+		glColor3f(0.2, 0.2, 0.8);
+		drawTextC("Orcamento:", 400, 100);
+		sprintf(buff, "%d %c", (int)orcamentoMensal, '€');
+		drawText(buff, 500, 100);
 
+		glColor3f(0.2, 0.2, 0.8);
+		drawTextC("Ordenados:", 400, 150);
+		sprintf(buff, "%d %c", (int)totOrdenados, '€');
+		drawText(buff, 500, 150);
+
+		max_luz = max_agua = max_gas = 0;
+		for (i = 0; i < 12; i++) {
+			luz[i] = cheiasMes[i] + vaziasMes[i] + pontaMes[i];
+			if (luz[i] > max_luz)
+				max_luz = luz[i];
+			if (gasMes[i] > max_gas)
+				max_gas = gasMes[i];
+			if (aguaMes[i] > max_agua)
+				max_agua = aguaMes[i];
+		}
+		/****************************************************/
+		/****************Gráfico de linhas*******************/
+		/****************************************************/
+		glColor3f(0, 0, 0);
+		glLineWidth(2);
+		glPointSize(5);
+		glBegin(GL_LINE_STRIP);
+		glVertex2i(linex, liney);//origem do gráfico
+		glVertex2i(linex, liney + 150);
+		glVertex2i(linex, liney);
+		glVertex2i(linex + 470, liney);
+		glEnd();
+
+		//lines
+		glLineWidth(1);
+		glColor3f(0.8, 0.2, 0.2);
+		glBegin(GL_LINE_STRIP);
+		for (i = 0; i < 12; i++) {
+			glVertex2f(i * 42 + linex, (luz[i] / max_luz) * 125 + liney);
+		}
+		glEnd();
+		glColor3f(0.2, 0.8, 0.2);
+		glBegin(GL_LINE_STRIP);
+		for (i = 0; i < 12; i++) {
+			glVertex2f(i * 42 + linex, (gasMes[i] / max_gas) * 125 + liney);
+		}
+		glEnd();
+		glColor3f(0.2, 0.2, 0.8);
+		glBegin(GL_LINE_STRIP);
+		for (i = 0; i < 12; i++) {
+			glVertex2f(i * 42 + linex, (aguaMes[i] / max_agua) * 125 + liney);
+		}
+		glEnd();
+
+		//points
+		glColor3f(0, 0, 0);
+		glBegin(GL_POINTS);
+		for (i = 0; i < 12; i++) {
+			glVertex2f(i * 42 + linex, (luz[i] / max_luz) * 125 + liney);
+		}
+		glEnd();
+		glBegin(GL_POINTS);
+		for (i = 0; i < 12; i++) {
+			glVertex2f(i * 42 + linex, (gasMes[i] / max_gas) * 125 + liney);
+		}
+		glEnd();
+		glBegin(GL_POINTS);
+		for (i = 0; i < 12; i++) {
+			glVertex2f(i * 42 + linex, (aguaMes[i] / max_agua) * 125 + liney);
+		}
+		glEnd();
 		break;
 	default:
 		break;
